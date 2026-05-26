@@ -1,0 +1,123 @@
+{
+  "project_key": "REL_SENTINEL",
+  "default_folder_key": "uipath-labs-folder-key-placeholder",
+  "capability_risk_weights": {
+    "claim_intake": 8,
+    "eligibility_routing": 16,
+    "human_review": 12,
+    "audit_evidence": 10,
+    "regression_baseline": 5
+  },
+  "test_sets": [
+    {
+      "key": "SMOKE",
+      "name": "ClaimsPilot smoke release gate",
+      "execution_type": "smoke",
+      "capabilities": ["claim_intake", "audit_evidence"],
+      "test_cases": [
+        {
+          "key": "TC-SMOKE-001",
+          "name": "Claim intake creates an audit event",
+          "capability": "claim_intake",
+          "automation": "ClaimsPilot.Smoke.IntakeAudit",
+          "priority": "P0"
+        },
+        {
+          "key": "TC-SMOKE-002",
+          "name": "Low-risk claim routes straight through",
+          "capability": "claim_intake",
+          "automation": "ClaimsPilot.Smoke.StraightThrough",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "key": "ELIGIBILITY_TARGETED",
+      "name": "Eligibility and routing targeted checks",
+      "execution_type": "targeted_regression",
+      "capabilities": ["eligibility_routing", "human_review"],
+      "test_cases": [
+        {
+          "key": "TC-ELIGIBILITY-101",
+          "name": "Injury claim requires adjuster review",
+          "capability": "eligibility_routing",
+          "automation": "ClaimsPilot.Eligibility.InjuryRoute",
+          "priority": "P0"
+        },
+        {
+          "key": "TC-ELIGIBILITY-102",
+          "name": "High-value claim blocks straight-through settlement",
+          "capability": "eligibility_routing",
+          "automation": "ClaimsPilot.Eligibility.HighValueRoute",
+          "priority": "P0"
+        },
+        {
+          "key": "TC-HITL-201",
+          "name": "Human review action is created for exception claim",
+          "capability": "human_review",
+          "automation": "ClaimsPilot.HumanReview.ActionCreated",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "key": "CLAIMS_TARGETED_REGRESSION",
+      "name": "ClaimsPilot targeted regression",
+      "execution_type": "targeted_regression",
+      "capabilities": ["claim_intake", "eligibility_routing", "human_review", "audit_evidence"],
+      "test_cases": [
+        {
+          "key": "TC-REG-301",
+          "name": "Inactive policy routes to manual exception",
+          "capability": "eligibility_routing",
+          "automation": "ClaimsPilot.Regression.InactivePolicy",
+          "priority": "P1"
+        },
+        {
+          "key": "TC-REG-302",
+          "name": "Fraud score routes to SIU review",
+          "capability": "eligibility_routing",
+          "automation": "ClaimsPilot.Regression.FraudRoute",
+          "priority": "P1"
+        },
+        {
+          "key": "TC-REG-303",
+          "name": "Audit trail includes agent and human handoff",
+          "capability": "audit_evidence",
+          "automation": "ClaimsPilot.Regression.AuditTrail",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "key": "FULL_REGRESSION",
+      "name": "Full ClaimsPilot regression",
+      "execution_type": "full_regression",
+      "capabilities": ["claim_intake", "eligibility_routing", "human_review", "audit_evidence", "regression_baseline"],
+      "test_cases": [
+        {
+          "key": "TC-FULL-901",
+          "name": "End-to-end claim lifecycle",
+          "capability": "regression_baseline",
+          "automation": "ClaimsPilot.Full.Lifecycle",
+          "priority": "P1"
+        },
+        {
+          "key": "TC-FULL-902",
+          "name": "Document-missing exception recovery",
+          "capability": "human_review",
+          "automation": "ClaimsPilot.Full.DocumentException",
+          "priority": "P2"
+        },
+        {
+          "key": "TC-FULL-903",
+          "name": "Cross-channel intake regression",
+          "capability": "claim_intake",
+          "automation": "ClaimsPilot.Full.CrossChannel",
+          "priority": "P2"
+        }
+      ]
+    }
+  ]
+}
+

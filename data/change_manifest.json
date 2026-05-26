@@ -1,0 +1,24 @@
+{
+  "change_id": "chg-claimpilot-042",
+  "title": "Tighten injury claim routing for ClaimsPilot",
+  "requirement": "Claims with injuries or high-value exposure must route to adjuster review before straight-through settlement. The change updates eligibility and routing logic and must preserve audit evidence for human review.",
+  "changed_files": [
+    "src/claimspilot/eligibility.py",
+    "src/claimspilot/workflow/routing_rules.py",
+    "docs/release-notes/claim-routing.md"
+  ],
+  "affected_capabilities": [
+    "claim_intake",
+    "eligibility_routing",
+    "human_review"
+  ],
+  "risk_tags": [
+    "customer_impact",
+    "regulated_decision",
+    "human_in_loop",
+    "new_logic"
+  ],
+  "author": "agenthack-builder@example.com",
+  "pull_request_url": "https://github.com/example/release-sentinel/pull/42"
+}
+

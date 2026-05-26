@@ -1,0 +1,10 @@
+{
+  "change_id": "chg-api-088",
+  "title": "Refactor routing API response envelope",
+  "requirement": "The routing API response is normalized for downstream agents. Eligibility routing should remain behaviorally identical, but existing tests may receive a different envelope shape.",
+  "changed_files": ["src/claimspilot/api/routing.py", "src/claimspilot/workflow/routing_rules.py"],
+  "affected_capabilities": ["eligibility_routing", "audit_evidence"],
+  "risk_tags": ["customer_impact", "new_logic"],
+  "author": "demo.builder@example.com"
+}
+

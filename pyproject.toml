@@ -1,0 +1,29 @@
+[project]
+name = "release-sentinel"
+version = "0.1.0"
+description = "Agentic release-risk and self-healing testing prototype for UiPath AgentHack Track 3."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Release Sentinel Team" }]
+dependencies = [
+  "fastapi>=0.115",
+  "jinja2>=3.1",
+  "pydantic>=2.8",
+  "uvicorn>=0.30"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "httpx>=0.27"
+]
+
+[project.scripts]
+release-sentinel = "releasesentinel.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+

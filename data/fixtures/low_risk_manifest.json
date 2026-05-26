@@ -1,0 +1,10 @@
+{
+  "change_id": "chg-copy-017",
+  "title": "Update ClaimsPilot dashboard helper copy",
+  "requirement": "Clarify the empty-state copy shown when no claims are waiting for review.",
+  "changed_files": ["web/templates/dashboard.html", "docs/operator-guide.md"],
+  "affected_capabilities": ["claim_intake"],
+  "risk_tags": ["minor_copy"],
+  "author": "demo.builder@example.com"
+}
+

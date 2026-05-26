@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Release Sentinel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">UiPath AgentHack Track 3</p>
+        <h1>Release Sentinel</h1>
+      </div>
+      <nav>
+        <a href="/docs" aria-label="Open API docs">API</a>
+        <a href="/api/latest-verdict" aria-label="Open latest verdict JSON">JSON</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      {% if verdict %}
+      <section class="summary-band decision-{{ verdict.decision }}">
+        <div>
+          <p class="eyebrow">Release verdict</p>
+          <h2>{{ verdict.decision | replace("_", " ") | title }}</h2>
+          <p>{{ verdict.release_notes[0] }}</p>
+        </div>
+        <div class="score">
+          <span>{{ verdict.risk.score }}</span>
+          <small>risk score</small>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article>
+          <h3>Impacted Capabilities</h3>
+          <div class="pills">
+            {% for item in verdict.risk.impacted_capabilities %}
+            <span>{{ item | replace("_", " ") }}</span>
+            {% endfor %}
+          </div>
+        </article>
+
+        <article>
+          <h3>Selected Test Cloud Sets</h3>
+          <ul class="tight">
+            {% for test_set in verdict.plan.selected_test_sets %}
+            <li>
+              <strong>{{ test_set.key }}</strong>
+              <span>{{ test_set.name }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+
+        <article>
+          <h3>Execution Evidence</h3>
+          <ul class="tight">
+            {% for execution in verdict.executions %}
+            <li>
+              <strong>{{ execution.execution_id }}</strong>
+              <span>{{ execution.result }} via {{ execution.source }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+
+        <article>
+          <h3>Human Review</h3>
+          <p class="large">{{ verdict.human_review_status | replace("_", " ") | title }}</p>
+          <p>{{ verdict.triage.summary }}</p>
+        </article>
+      </section>
+
+      <section class="split">
+        <article>
+          <h3>Agent Reasoning</h3>
+          <ol class="reasoning">
+            {% for driver in verdict.risk.drivers %}
+            <li>{{ driver }}</li>
+            {% endfor %}
+          </ol>
+        </article>
+        <article>
+          <h3>Failure Triage</h3>
+          {% if verdict.triage.failures %}
+          <ul class="triage">
+            {% for failure in verdict.triage.failures %}
+            <li>
+              <strong>{{ failure.category | replace("_", " ") | title }}</strong>
+              <span>{{ failure.test_case_name }}</span>
+              <p>{{ failure.recommended_fix }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No failures were found in the selected Test Cloud execution evidence.</p>
+          {% endif %}
+        </article>
+      </section>
+
+      <section class="next-actions">
+        <h3>Next Actions</h3>
+        <ul>
+          {% for action in verdict.next_actions %}
+          <li>{{ action }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% else %}
+      <section class="empty">
+        <h2>No verdict generated yet</h2>
+        <p>Run the demo pipeline, then refresh this dashboard.</p>
+        <code>python -m releasesentinel run --scenario failing --pretty</code>
+      </section>
+      {% endif %}
+    </main>
+  </body>
+</html>
+
