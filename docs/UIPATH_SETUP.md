@@ -1,6 +1,6 @@
 # UiPath Automation Cloud Setup
 
-This repo runs locally without credentials. For the hackathon submission, connect it to UiPath Labs so the demo shows real Test Cloud execution evidence.
+This repo runs locally without credentials. For the hackathon submission, run the UiPath-backed path so the demo shows real Test Cloud execution evidence. Keep the local simulator only for developer fallback.
 
 ## 1. Prepare CLI and Coding-Agent Skills
 
@@ -23,6 +23,7 @@ Notes:
 ## 2. Create Test Cloud Assets
 
 Create or reuse a Test Manager project named `Release Sentinel` with project key `REL_SENTINEL`.
+Capture the real Test Manager folder key from UiPath Labs and set `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` before using `--runner uipath`.
 
 Map the local coverage file to Test Cloud:
 
@@ -62,6 +63,8 @@ manifest = load_manifest()
 runner = UiPathTestManagerRunner(project_key=coverage.project_key)
 verdict = ReleaseSentinelPipeline(coverage=coverage, runner=runner).run(manifest)
 ```
+
+For a direct submission demo, set `RELEASE_SENTINEL_RUNNER=uipath`, set `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY`, and run `python -m releasesentinel run --runner uipath ...`.
 
 ## 5. Agent Builder Tools
 

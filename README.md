@@ -55,6 +55,13 @@ python -m releasesentinel run --manifest data/fixtures/ambiguous_manifest.json -
 python -m releasesentinel run --scenario timeout --pretty
 ```
 
+For the hackathon submission, use the UiPath-backed runner with a real Test Manager folder key configured in UiPath Labs:
+
+```powershell
+$env:RELEASE_SENTINEL_RUNNER='uipath'
+python -m releasesentinel run --scenario failing --pretty --runner uipath
+```
+
 ## API Contracts
 
 The API is designed so UiPath API Workflows or Agent Builder tools can call deterministic functions.
@@ -81,6 +88,8 @@ The intended Automation Cloud implementation uses:
 - UiPath Agent Builder or coded agent deployment for Release Sentinel orchestration.
 - API Workflows as governed tools for analysis, selection, triage, and verdict publishing.
 - Action Center for human review when failures are ambiguous, timed out, or low-confidence.
+
+The repository keeps a local simulator for development, but the submission demo should use UiPath Test Manager by setting `RELEASE_SENTINEL_RUNNER=uipath` and `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` in the UiPath Labs environment.
 
 See [docs/UIPATH_SETUP.md](docs/UIPATH_SETUP.md) for the Test Cloud wiring plan.
 

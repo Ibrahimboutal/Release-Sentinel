@@ -36,11 +36,11 @@ Narration:
 
 ## 2:10-3:10 Test Cloud Evidence
 
-Show UiPath Test Manager project/test sets or the local execution IDs if recording before Labs wiring.
+Show UiPath Test Manager project/test sets and the live execution IDs from UiPath Labs.
 
 Narration:
 
-"In the connected version, these execution IDs come from UiPath Test Manager using `uip tm testsets run`, `uip tm wait`, and `uip tm report get`."
+"These execution IDs come from UiPath Test Manager using `uip tm testsets run`, `uip tm wait`, and `uip tm report get`."
 
 ## 3:10-4:10 Failure Triage
 

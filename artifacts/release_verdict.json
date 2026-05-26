@@ -1,6 +1,6 @@
 {
   "change_id": "chg-claimpilot-042",
-  "generated_at": "2026-05-26T00:11:34.590560Z",
+  "generated_at": "2026-05-26T00:52:50.431713Z",
   "decision": "block",
   "risk": {
     "change_id": "chg-claimpilot-042",
@@ -175,17 +175,17 @@
   },
   "executions": [
     {
-      "execution_id": "tm-sim-7a639290",
+      "execution_id": "tm-sim-dc65e6d1",
       "test_set_key": "SMOKE",
       "test_set_name": "ClaimsPilot smoke release gate",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-26T00:11:34.590560Z",
-      "finished_at": "2026-05-26T00:11:34.590560Z",
+      "started_at": "2026-05-26T00:52:50.428177Z",
+      "finished_at": "2026-05-26T00:52:50.428177Z",
       "logs": [
         {
-          "id": "log-e04f9b6a",
+          "id": "log-8a4c981a",
           "test_case_key": "TC-SMOKE-001",
           "test_case_name": "Claim intake creates an audit event",
           "status": "finished",
@@ -199,7 +199,7 @@
           "attachments": []
         },
         {
-          "id": "log-8d2e7550",
+          "id": "log-6119e26c",
           "test_case_key": "TC-SMOKE-002",
           "test_case_name": "Low-risk claim routes straight through",
           "status": "finished",
@@ -221,17 +221,17 @@
       }
     },
     {
-      "execution_id": "tm-sim-e257319a",
+      "execution_id": "tm-sim-49ee887a",
       "test_set_key": "ELIGIBILITY_TARGETED",
       "test_set_name": "Eligibility and routing targeted checks",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-26T00:11:34.590560Z",
-      "finished_at": "2026-05-26T00:11:34.590560Z",
+      "started_at": "2026-05-26T00:52:50.428177Z",
+      "finished_at": "2026-05-26T00:52:50.428177Z",
       "logs": [
         {
-          "id": "log-e1bd4513",
+          "id": "log-3f6b4749",
           "test_case_key": "TC-ELIGIBILITY-101",
           "test_case_name": "Injury claim requires adjuster review",
           "status": "finished",
@@ -247,7 +247,7 @@
           ]
         },
         {
-          "id": "log-a52873fb",
+          "id": "log-14728901",
           "test_case_key": "TC-ELIGIBILITY-102",
           "test_case_name": "High-value claim blocks straight-through settlement",
           "status": "finished",
@@ -263,7 +263,7 @@
           ]
         },
         {
-          "id": "log-511a8974",
+          "id": "log-7a209eba",
           "test_case_key": "TC-HITL-201",
           "test_case_name": "Human review action is created for exception claim",
           "status": "finished",
@@ -283,17 +283,17 @@
       }
     },
     {
-      "execution_id": "tm-sim-8f87d364",
+      "execution_id": "tm-sim-9122efde",
       "test_set_key": "CLAIMS_TARGETED_REGRESSION",
       "test_set_name": "ClaimsPilot targeted regression",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-26T00:11:34.590560Z",
-      "finished_at": "2026-05-26T00:11:34.590560Z",
+      "started_at": "2026-05-26T00:52:50.429174Z",
+      "finished_at": "2026-05-26T00:52:50.429174Z",
       "logs": [
         {
-          "id": "log-7f0cdf93",
+          "id": "log-c2aa5b6a",
           "test_case_key": "TC-REG-301",
           "test_case_name": "Inactive policy routes to manual exception",
           "status": "finished",
@@ -307,7 +307,7 @@
           "attachments": []
         },
         {
-          "id": "log-bcaf3627",
+          "id": "log-1c554ca4",
           "test_case_key": "TC-REG-302",
           "test_case_name": "Fraud score routes to SIU review",
           "status": "finished",
@@ -323,7 +323,7 @@
           ]
         },
         {
-          "id": "log-240c9564",
+          "id": "log-f91ff4fb",
           "test_case_key": "TC-REG-303",
           "test_case_name": "Audit trail includes agent and human handoff",
           "status": "finished",
@@ -343,17 +343,17 @@
       }
     },
     {
-      "execution_id": "tm-sim-3db8c8e8",
+      "execution_id": "tm-sim-04b53df5",
       "test_set_key": "FULL_REGRESSION",
       "test_set_name": "Full ClaimsPilot regression",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-26T00:11:34.590560Z",
-      "finished_at": "2026-05-26T00:11:34.590560Z",
+      "started_at": "2026-05-26T00:52:50.430691Z",
+      "finished_at": "2026-05-26T00:52:50.430691Z",
       "logs": [
         {
-          "id": "log-643df6f5",
+          "id": "log-79c552e5",
           "test_case_key": "TC-FULL-901",
           "test_case_name": "End-to-end claim lifecycle",
           "status": "finished",
@@ -367,7 +367,7 @@
           "attachments": []
         },
         {
-          "id": "log-561fc3d2",
+          "id": "log-f629d8fc",
           "test_case_key": "TC-FULL-902",
           "test_case_name": "Document-missing exception recovery",
           "status": "finished",
@@ -383,7 +383,7 @@
           ]
         },
         {
-          "id": "log-23296b0d",
+          "id": "log-970fd605",
           "test_case_key": "TC-FULL-903",
           "test_case_name": "Cross-channel intake regression",
           "status": "finished",
@@ -473,7 +473,7 @@
   "release_notes": [
     "Change 'Tighten injury claim routing for ClaimsPilot' scored 100/100 (critical).",
     "Selected Test Cloud suites: SMOKE, ELIGIBILITY_TARGETED, CLAIMS_TARGETED_REGRESSION, FULL_REGRESSION.",
-    "Execution evidence: tm-sim-7a639290, tm-sim-e257319a, tm-sim-8f87d364, tm-sim-3db8c8e8."
+    "Execution evidence: tm-sim-dc65e6d1, tm-sim-49ee887a, tm-sim-9122efde, tm-sim-04b53df5."
   ],
   "human_review_status": "not_required",
   "next_actions": [

@@ -1,6 +1,6 @@
 {
   "project_key": "REL_SENTINEL",
-  "default_folder_key": "uipath-labs-folder-key-placeholder",
+  "default_folder_key": null,
   "capability_risk_weights": {
     "claim_intake": 8,
     "eligibility_routing": 16,
