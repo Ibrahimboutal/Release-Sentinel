@@ -21,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--output", type=Path, default=DEFAULT_VERDICT)
     run.add_argument("--scenario", choices=["auto", "happy", "failing", "ambiguous", "timeout"], default="auto")
     run.add_argument("--runner", choices=["auto", "simulated", "uipath"], default="auto")
+    run.add_argument("--sync-coverage", action="store_true", help="Merge live UiPath Test Manager test sets before analysis")
     run.add_argument("--pretty", action="store_true", help="Print the full verdict JSON")
 
     serve = subcommands.add_parser("serve", help="Start the local API and dashboard")
@@ -35,7 +36,11 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "run":
         manifest = load_manifest(args.manifest)
         coverage = load_coverage(args.coverage)
-        verdict = ReleaseSentinelPipeline(coverage=coverage, runner_mode=args.runner).run(
+        verdict = ReleaseSentinelPipeline(
+            coverage=coverage,
+            runner_mode=args.runner,
+            sync_coverage=args.sync_coverage,
+        ).run(
             manifest,
             scenario=args.scenario,
             persist=False,
@@ -48,4 +53,3 @@ def main(argv: list[str] | None = None) -> None:
             print(f"wrote {args.output}")
     elif args.command == "serve":
         uvicorn.run(app, host=args.host, port=args.port)
-

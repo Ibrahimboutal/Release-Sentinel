@@ -36,6 +36,8 @@ Output: `TestPlan` with selected Test Cloud test sets, rationale, and expected r
 
 Input: `manifest` and `executions`.
 
+Input can also include `flakiness_map`, keyed by test case key or test case name.
+
 Output: `TriageReport` with classified failures and human-review flag.
 
 ## POST /api/release-verdict
@@ -52,5 +54,6 @@ Input:
 
 Output: full `ReleaseVerdict`.
 
-Scenarios are local demo helpers: `auto`, `happy`, `failing`, `ambiguous`, and `timeout`. In the UiPath-connected version, the runner uses real Test Manager executions instead of scenario fixtures.
+When the verdict requires human review and Orchestrator credentials are configured, the response includes `action_center_task_id`.
 
+Scenarios are local demo helpers: `auto`, `happy`, `failing`, `ambiguous`, and `timeout`. In the UiPath-connected version, the runner uses real Test Manager executions instead of scenario fixtures.

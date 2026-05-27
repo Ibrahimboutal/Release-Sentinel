@@ -21,6 +21,9 @@ The demo uses a synthetic insurance workflow called ClaimsPilot. A change to cla
 - Python coded agent/service for analysis, test selection, triage, and release gating.
 - UiPath Test Cloud/Test Manager as the test execution and evidence layer.
 - UiPath CLI `uip tm` adapter for launching test sets and collecting results.
+- Dynamic coverage sync from Test Manager test sets.
+- Historical flakiness scoring from recent Test Manager executions.
+- Real Action Center form task creation for pending release reviews.
 - API Workflow-friendly endpoints for deterministic agent tools.
 - Action Center review pattern for uncertain verdicts.
 - Local deterministic runner for repeatable demos and CI.
@@ -48,9 +51,9 @@ We utilized coding agents via UiPath for Coding Agents:
 ## Next Steps
 
 - Connect the demo runner to a live UiPath Labs Test Manager project.
-- Add Action Center task creation from the verdict payload.
-- Expand the coverage map from static JSON to Test Manager metadata.
-- Add historical flakiness and change-impact learning.
+- Add direct Action Center completion callbacks to update the release verdict after reviewer approval.
+- Expand capability tagging from default synced metadata to Test Manager custom fields.
+- Add change-impact learning from past release outcomes.
 
 ## Submission Links & Checklist
 
@@ -62,4 +65,3 @@ We utilized coding agents via UiPath for Coding Agents:
 - [ ] **Run on the Cloud for Video**: Configure `RELEASE_SENTINEL_RUNNER=uipath` and `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` in the UiPath Labs environment before recording.
 - [ ] **Presentation Deck Sharing**: Upload `release-sentinel-agenthack.pptx` (located at `outputs/manual-release-sentinel/presentations/release-sentinel/output/release-sentinel-agenthack.pptx`) to Google Drive/OneDrive, set permissions to "Anyone with the link can view", and paste the link above.
 - [ ] **Product Feedback Prize**: Complete the optional feedback form on Devpost for a chance to win the $1,500 prize.
-

@@ -70,6 +70,9 @@
           <h3>Human Review</h3>
           <p class="large">{{ verdict.human_review_status | replace("_", " ") | title }}</p>
           <p>{{ verdict.triage.summary }}</p>
+          {% if verdict.action_center_task_id %}
+          <p class="task-id">Action Center task: {{ verdict.action_center_task_id }}</p>
+          {% endif %}
         </article>
       </section>
 
@@ -118,4 +121,3 @@
     </main>
   </body>
 </html>
-

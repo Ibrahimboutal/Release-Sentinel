@@ -136,6 +136,7 @@ class ReleaseVerdict(BaseModel):
     triage: TriageReport
     release_notes: list[str]
     human_review_status: Literal["not_required", "pending", "completed"] = "not_required"
+    action_center_task_id: str | None = None
     next_actions: list[str]
 
 
@@ -151,10 +152,10 @@ class SelectTestsRequest(BaseModel):
 class TriageRequest(BaseModel):
     manifest: ChangeManifest
     executions: list[TestExecution]
+    flakiness_map: dict[str, float] = Field(default_factory=dict)
 
 
 class VerdictRequest(BaseModel):
     manifest: ChangeManifest
     scenario: Literal["auto", "happy", "failing", "ambiguous", "timeout"] = "auto"
     persist: bool = True
-

@@ -232,6 +232,12 @@ article,
   margin-bottom: 8px;
 }
 
+.task-id {
+  color: var(--blue);
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+
 .reasoning {
   display: grid;
   gap: 9px;
@@ -347,4 +353,3 @@ code {
     color: #cbd5e1;
   }
 }
-

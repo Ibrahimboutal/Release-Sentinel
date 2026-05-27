@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import OrderedDict
+import os
 
 from .models import (
     ChangeManifest,
@@ -16,6 +17,7 @@ from .models import (
     TriageCategory,
     TriageReport,
 )
+from .flakiness import DEFAULT_FLAKINESS_THRESHOLD
 
 
 HIGH_RISK_TERMS = {
@@ -169,13 +171,34 @@ class TestPlannerAgent:
 
 
 class FailureTriageAgent:
-    def triage(self, manifest: ChangeManifest, executions: list[TestExecution]) -> TriageReport:
+    def __init__(self, flakiness_threshold: float | None = None) -> None:
+        self.flakiness_threshold = (
+            flakiness_threshold
+            if flakiness_threshold is not None
+            else _float_env("RELEASE_SENTINEL_FLAKINESS_THRESHOLD", DEFAULT_FLAKINESS_THRESHOLD)
+        )
+
+    def triage(
+        self,
+        manifest: ChangeManifest,
+        executions: list[TestExecution],
+        flakiness_map: dict[str, float] | None = None,
+    ) -> TriageReport:
+        flakiness_map = flakiness_map or {}
         failures: list[FailureTriage] = []
         for execution in executions:
             for log in execution.logs:
                 if log.result != "failed" and log.status != "timed_out":
                     continue
-                failures.append(self._triage_log(log.message, log.test_case_key, log.test_case_name, manifest))
+                failures.append(
+                    self._triage_log(
+                        log.message,
+                        log.test_case_key,
+                        log.test_case_name,
+                        manifest,
+                        self._flakiness_index(log.test_case_key, log.test_case_name, flakiness_map),
+                    )
+                )
 
         if not failures:
             return TriageReport(
@@ -194,7 +217,18 @@ class FailureTriageAgent:
             human_review_required=review_required,
         )
 
-    def _triage_log(self, message: str, key: str, name: str, manifest: ChangeManifest) -> FailureTriage:
+    @staticmethod
+    def _flakiness_index(key: str, name: str, flakiness_map: dict[str, float]) -> float:
+        return max(flakiness_map.get(key, 0.0), flakiness_map.get(name, 0.0))
+
+    def _triage_log(
+        self,
+        message: str,
+        key: str,
+        name: str,
+        manifest: ChangeManifest,
+        flakiness_index: float = 0.0,
+    ) -> FailureTriage:
         normalized = message.lower()
 
         if "timeout" in normalized or "robot unavailable" in normalized:
@@ -231,6 +265,19 @@ class FailureTriageAgent:
             )
 
         if "expected route" in normalized or "eligibility" in normalized or "policy" in normalized:
+            if flakiness_index >= self.flakiness_threshold:
+                return FailureTriage(
+                    test_case_key=key,
+                    test_case_name=name,
+                    category=TriageCategory.test_fragility,
+                    confidence=0.82,
+                    evidence=[
+                        message,
+                        f"Historical flakiness index is {flakiness_index:.2f}, above threshold {self.flakiness_threshold:.2f}.",
+                    ],
+                    recommended_fix="Quarantine or repair the historically flaky test before treating this as a release-blocking product defect.",
+                    requires_human_review=False,
+                )
             return FailureTriage(
                 test_case_key=key,
                 test_case_name=name,
@@ -321,3 +368,11 @@ class ReleaseGate:
 
 def slugify(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+
+
+def _float_env(name: str, default: float) -> float:
+    try:
+        value = float(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+    return max(0.0, min(1.0, value))

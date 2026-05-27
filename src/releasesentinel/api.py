@@ -41,7 +41,7 @@ def select_tests(request: SelectTestsRequest):
 
 @app.post("/api/triage-results")
 def triage_results(request: TriageRequest):
-    return pipeline().triage_results(request.manifest, request.executions)
+    return pipeline().triage_results(request.manifest, request.executions, request.flakiness_map)
 
 
 @app.post("/api/release-verdict")

@@ -23,7 +23,7 @@ Notes:
 ## 2. Create Test Cloud Assets
 
 Create or reuse a Test Manager project named `Release Sentinel` with project key `REL_SENTINEL`.
-Capture the real Test Manager folder key from UiPath Labs and set `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` before using `--runner uipath`.
+Capture the real Test Manager folder key from UiPath Labs and set `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` when you want coverage sync filtered to one Orchestrator folder.
 
 Map the local coverage file to Test Cloud:
 
@@ -64,9 +64,36 @@ runner = UiPathTestManagerRunner(project_key=coverage.project_key)
 verdict = ReleaseSentinelPipeline(coverage=coverage, runner=runner).run(manifest)
 ```
 
-For a direct submission demo, set `RELEASE_SENTINEL_RUNNER=uipath`, set `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY`, and run `python -m releasesentinel run --runner uipath ...`.
+For a direct submission demo, set `RELEASE_SENTINEL_RUNNER=uipath` and run:
 
-## 5. Agent Builder Tools
+```powershell
+python -m releasesentinel run --runner uipath --sync-coverage --pretty
+```
+
+## 5. Dynamic Coverage Sync
+
+Release Sentinel can merge live Test Manager test sets into the local coverage map before selecting tests:
+
+```powershell
+uip tm testsets list --project-key REL_SENTINEL --folder-key <folder-uuid> --output json
+uip tm testsets list-testcases --test-set-key REL_SENTINEL:10 --output json
+```
+
+Existing local mappings are preserved. New Test Manager sets are appended as `regression_baseline` coverage so they can be selected by future risk rules.
+
+## 6. Historical Flakiness
+
+In UiPath runner mode, Release Sentinel resolves each selected test set key to its Test Manager UUID, then inspects recent execution logs:
+
+```powershell
+uip tm testsets list --project-key REL_SENTINEL --output json
+uip tm executions list --project-key REL_SENTINEL --test-set-id <test-set-uuid> --top 10 --output json
+uip tm executions testcaselogs list --execution-id <execution-uuid> --project-key REL_SENTINEL --output json
+```
+
+Set `RELEASE_SENTINEL_FLAKINESS_THRESHOLD` to tune the downgrade threshold. The default is `0.35`.
+
+## 7. Agent Builder Tools
 
 Expose these as API Workflow tools:
 
@@ -77,14 +104,22 @@ Expose these as API Workflow tools:
 | Triage results | `POST /api/triage-results` | `ChangeManifest`, `TestExecution[]` | `TriageReport` |
 | Publish verdict | `POST /api/release-verdict` | `ChangeManifest`, optional scenario for demo | `ReleaseVerdict` |
 
-## 6. Human-In-The-Loop Review
+## 8. Human-In-The-Loop Review
 
-Create an Action Center task when:
+Create an Action Center form task when:
 
 - Test execution times out.
 - Triage confidence is low.
 - Failure category is `needs_human_review`.
 - Risk is critical even when tests pass.
+
+Configure:
+
+```powershell
+$env:RELEASE_SENTINEL_ORCHESTRATOR_URL='https://cloud.uipath.com/org/tenant/orchestrator_'
+$env:RELEASE_SENTINEL_ORCHESTRATOR_TOKEN='<bearer-token>'
+$env:RELEASE_SENTINEL_TASK_CATALOG='ReleaseGateReviews'
+```
 
 The Action Center payload should include:
 
@@ -93,8 +128,9 @@ The Action Center payload should include:
 - Test execution IDs.
 - Failure triage category and recommendation.
 - Approve, block, or request-more-tests action.
+- Returned Action Center task ID, stored as `action_center_task_id` in the verdict.
 
-## 7. Demo Checklist
+## 9. Demo Checklist
 
 - Show Codex or another coding agent using the UiPath skills or repo scripts.
 - Show Test Manager test sets and a real execution result.
@@ -108,4 +144,3 @@ Official docs used while building this plan:
 - https://docs.uipath.com/uipath-cli/standalone/latest/user-guide/uip-test-manager-testsets
 - https://docs.uipath.com/uipath-cli/standalone/latest/user-guide/uip-test-manager-executions
 - https://docs.uipath.com/uipath-cli/standalone/latest/user-guide/coding-agents
-

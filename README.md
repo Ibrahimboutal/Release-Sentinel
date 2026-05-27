@@ -8,7 +8,7 @@ The demo scenario uses a synthetic insurance workflow called ClaimsPilot. A chan
 
 - Reimagines test planning and release gating with agents.
 - Uses Test Cloud/Test Manager as the execution and evidence system.
-- Keeps humans in the loop for ambiguous or low-confidence results.
+- Creates real Action Center review tasks for ambiguous or low-confidence results when Orchestrator credentials are configured.
 - Shows coding-agent usage and a clear handoff to UiPath Automation Cloud.
 - Uses only synthetic data, so the repo can be public.
 
@@ -30,6 +30,9 @@ Core modules:
 - `src/claimspilot`: the small enterprise workflow under test.
 - `src/releasesentinel/agents.py`: risk scoring, test planning, triage, and release gate logic.
 - `src/releasesentinel/runners.py`: local deterministic runner plus a thin `uip tm` adapter.
+- `src/releasesentinel/action_center.py`: real Action Center form task creation with safe local fallback.
+- `src/releasesentinel/coverage_sync.py`: live Test Manager test-set sync via `uip tm testsets list`.
+- `src/releasesentinel/flakiness.py`: historical flakiness scoring from Test Manager execution logs.
 - `src/releasesentinel/api.py`: API Workflow-friendly HTTP endpoints.
 - `web/templates/dashboard.html`: a local evidence dashboard for the demo.
 
@@ -71,7 +74,16 @@ For the hackathon submission, use the UiPath-backed runner with a real Test Mana
 
 ```powershell
 $env:RELEASE_SENTINEL_RUNNER='uipath'
-python -m releasesentinel run --scenario failing --pretty --runner uipath
+python -m releasesentinel run --scenario failing --pretty --runner uipath --sync-coverage
+```
+
+Optional cloud-review variables:
+
+```powershell
+$env:RELEASE_SENTINEL_ORCHESTRATOR_URL='https://cloud.uipath.com/org/tenant/orchestrator_'
+$env:RELEASE_SENTINEL_ORCHESTRATOR_TOKEN='<bearer-token>'
+$env:RELEASE_SENTINEL_TASK_CATALOG='ReleaseGateReviews'
+$env:RELEASE_SENTINEL_FLAKINESS_THRESHOLD='0.35'
 ```
 
 ## API Contracts
@@ -99,9 +111,9 @@ The intended Automation Cloud implementation uses:
 - UiPath for Coding Agents with Codex skills installed locally.
 - UiPath Agent Builder or coded agent deployment for Release Sentinel orchestration.
 - API Workflows as governed tools for analysis, selection, triage, and verdict publishing.
-- Action Center for human review when failures are ambiguous, timed out, or low-confidence.
+- Action Center for real human review tasks when failures are ambiguous, timed out, critical-risk, or low-confidence.
 
-The repository keeps a local simulator for development, but the submission demo should use UiPath Test Manager by setting `RELEASE_SENTINEL_RUNNER=uipath` and `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` in the UiPath Labs environment.
+The repository keeps a local simulator for development, but the submission demo should use UiPath Test Manager by setting `RELEASE_SENTINEL_RUNNER=uipath` and running with `--sync-coverage` in the UiPath Labs environment.
 
 See [docs/UIPATH_SETUP.md](docs/UIPATH_SETUP.md) for the Test Cloud wiring plan.
 
