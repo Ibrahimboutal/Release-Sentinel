@@ -45,3 +45,14 @@ Release Sentinel does not run every test blindly. It uses risk and coverage to c
 - Expand the coverage map from static JSON to Test Manager metadata.
 - Add historical flakiness and change-impact learning.
 
+## Submission Links & Checklist
+
+- **Demo Video**: `[Insert Link to Demo Video (Max 5 mins)]`
+- **Presentation Slide Deck**: `[Insert Shared Link to release-sentinel-agenthack.pptx (Ensure public viewing permissions)]`
+- **GitHub Repository**: `[Insert Link to Public GitHub Repo]`
+
+### Hackathon Checklist & Recommendations:
+- [ ] **Run on the Cloud for Video**: Configure `RELEASE_SENTINEL_RUNNER=uipath` and `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` in the UiPath Labs environment before recording.
+- [ ] **Presentation Deck Sharing**: Upload `release-sentinel-agenthack.pptx` (located at `outputs/manual-release-sentinel/presentations/release-sentinel/output/release-sentinel-agenthack.pptx`) to Google Drive/OneDrive, set permissions to "Anyone with the link can view", and paste the link above.
+- [ ] **Product Feedback Prize**: Complete the optional feedback form on Devpost for a chance to win the $1,500 prize.
+

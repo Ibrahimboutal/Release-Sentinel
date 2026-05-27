@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 import subprocess
 from datetime import datetime, timezone
@@ -158,6 +159,7 @@ class UiPathTestManagerRunner:
             capture_output=True,
             text=True,
             check=False,
+            shell=os.name == "nt",
         )
         if completed.returncode != 0 and not allow_failure:
             raise RuntimeError(completed.stderr or completed.stdout or f"uip exited {completed.returncode}")
