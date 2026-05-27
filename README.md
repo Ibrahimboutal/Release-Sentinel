@@ -33,7 +33,19 @@ Core modules:
 - `src/releasesentinel/api.py`: API Workflow-friendly HTTP endpoints.
 - `web/templates/dashboard.html`: a local evidence dashboard for the demo.
 
+## Agent Type
+
+Release Sentinel utilizes **Coded Agents** built with Python and Pydantic models to implement custom agent logic (risk analysis, test selection, execution triage, and release gating). These coded agent capabilities are designed to be exposed as API Workflow endpoints or packaged as local tools.
+
+
+## Prerequisites
+
+- **Python**: version 3.11 or higher.
+- **Node.js & npm** (optional): required only if running the real Test Cloud integration via the UiPath CLI `@uipath/cli`.
+- **UiPath Automation Cloud Tenant** (optional): required for cloud execution and UiPath Test Manager integration.
+
 ## Quickstart
+
 
 ```powershell
 python -m pip install -e ".[dev]"
@@ -92,6 +104,14 @@ The intended Automation Cloud implementation uses:
 The repository keeps a local simulator for development, but the submission demo should use UiPath Test Manager by setting `RELEASE_SENTINEL_RUNNER=uipath` and `RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY` in the UiPath Labs environment.
 
 See [docs/UIPATH_SETUP.md](docs/UIPATH_SETUP.md) for the Test Cloud wiring plan.
+
+## Coding Agents Bonus (AI-Assisted Development)
+
+This project qualifies for the hackathon bonus points under the Platform Usage criterion by utilizing coding agents:
+- **Coding Agent Used**: Built using **Gemini CLI / Antigravity** agentic AI coding assistant and **UiPath for Coding Agents** interfaces.
+- **Contribution**: The coding agent assisted in building the python coded pipeline (scoring engine, planners, and triage agents), setting up the FastAPI REST services, implementing the responsive dark/light mode dashboard interface, and troubleshooting Windows-specific command execution shim issues for globally installed npm packages.
+- **Integration**: The agentic code output forms the core execution pipeline, tests, and web assets of Release Sentinel.
+
 
 ## Demo Flow
 

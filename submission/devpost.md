@@ -38,6 +38,13 @@ The demo uses a synthetic insurance workflow called ClaimsPilot. A change to cla
 
 Release Sentinel does not run every test blindly. It uses risk and coverage to choose the right level of validation, then explains the decision with evidence. It can approve low-risk changes quickly, block product bugs, and route ambiguous cases to people.
 
+## Coding Agents Bonus (AI-Assisted Development)
+
+We utilized coding agents via UiPath for Coding Agents:
+- **Coding Agents Used**: Built with the **Gemini CLI / Antigravity** agentic AI coding assistant.
+- **Contribution**: The coding agent assisted in planning, code construction (FastAPI service, scoring pipeline, triage, and release gating logic), building a local simulator and UiPath runner, and designing the responsive HTML/CSS dashboard (including light/dark mode support). It also resolved a Windows-specific command execution issue with the global npm `uip` tool.
+- **Integration**: The agentic code output is fully integrated and runs the entire Release Sentinel pipeline, web server, and CLI tools.
+
 ## Next Steps
 
 - Connect the demo runner to a live UiPath Labs Test Manager project.
