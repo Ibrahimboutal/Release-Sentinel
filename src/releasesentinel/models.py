@@ -159,3 +159,10 @@ class VerdictRequest(BaseModel):
     manifest: ChangeManifest
     scenario: Literal["auto", "happy", "failing", "ambiguous", "timeout"] = "auto"
     persist: bool = True
+
+
+class DemoRunRequest(BaseModel):
+    scenario: Literal["happy", "failing", "ambiguous", "timeout"]
+    manifest_path: str | None = None
+    sync_coverage: bool = False
+    runner: Literal["auto", "simulated", "uipath"] = "auto"

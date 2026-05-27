@@ -10,7 +10,7 @@ build/
 htmlcov/
 artifacts/*.tmp
 artifacts/*.log
+artifacts/run_history.jsonl
 uipath.config.json
 .env
 node_modules/
-

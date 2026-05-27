@@ -6,7 +6,7 @@
     <title>Release Sentinel</title>
     <link rel="stylesheet" href="/static/styles.css">
   </head>
-  <body>
+  <body data-generated-at="{% if verdict %}{{ verdict.generated_at }}{% endif %}">
     <header class="topbar">
       <div>
         <p class="eyebrow">UiPath AgentHack Track 3</p>
@@ -19,6 +19,20 @@
     </header>
 
     <main class="shell">
+      <section class="control-strip" aria-label="Demo controls">
+        <div>
+          <p class="eyebrow">Live demo</p>
+          <h2>Run a release gate scenario</h2>
+        </div>
+        <div class="scenario-actions">
+          <button type="button" data-scenario="happy">Approve</button>
+          <button type="button" data-scenario="failing">Block</button>
+          <button type="button" data-scenario="ambiguous">Review</button>
+          <button type="button" data-scenario="timeout">Timeout</button>
+        </div>
+        <p id="live-status" class="live-status" role="status">Polling latest verdict</p>
+      </section>
+
       {% if verdict %}
       <section class="summary-band decision-{{ verdict.decision }}">
         <div>
@@ -111,13 +125,31 @@
           {% endfor %}
         </ul>
       </section>
+
+      {% if history %}
+      <section class="history">
+        <div class="section-heading">
+          <h3>Run History</h3>
+          <a href="/api/run-history">JSON</a>
+        </div>
+        <ol>
+          {% for item in history %}
+          <li>
+            <strong>{{ item.decision | replace("_", " ") | title }}</strong>
+            <span>{{ item.change_id }} | risk {{ item.risk_score }} | {{ item.failure_count }} failure(s)</span>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+      {% endif %}
       {% else %}
       <section class="empty">
         <h2>No verdict generated yet</h2>
-        <p>Run the demo pipeline, then refresh this dashboard.</p>
+        <p>Trigger a scenario above or run the CLI.</p>
         <code>python -m releasesentinel run --scenario failing --pretty</code>
       </section>
       {% endif %}
     </main>
+    <script src="/static/dashboard.js"></script>
   </body>
 </html>

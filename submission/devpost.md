@@ -14,7 +14,7 @@ Release Sentinel answers that question with an agentic release gate built around
 
 Release Sentinel reviews a change manifest, predicts risk, maps impacted capabilities to Test Cloud test sets, runs the selected checks, triages failures, and produces an auditable release verdict. If the result is ambiguous or low-confidence, it routes the decision to a human reviewer instead of pretending the automation knows everything.
 
-The demo uses a synthetic insurance workflow called ClaimsPilot. A change to claim eligibility and routing is analyzed, matched to targeted Test Cloud regression coverage, executed, triaged, and summarized in a dashboard.
+The demo uses a synthetic insurance workflow called ClaimsPilot. A change to claim eligibility and routing is analyzed, matched to targeted Test Cloud regression coverage, executed, triaged, and summarized in a live dashboard with scenario controls and run history.
 
 ## How We Built It
 
@@ -26,6 +26,8 @@ The demo uses a synthetic insurance workflow called ClaimsPilot. A change to cla
 - Real Action Center form task creation for pending release reviews.
 - API Workflow-friendly endpoints for deterministic agent tools.
 - Action Center review pattern for uncertain verdicts.
+- Browser-based live demo controls for approve, block, review, and timeout release outcomes.
+- Compact JSONL run history for release-audit storytelling.
 - Local deterministic runner for repeatable demos and CI.
 
 ## UiPath Components Used
@@ -40,6 +42,8 @@ The demo uses a synthetic insurance workflow called ClaimsPilot. A change to cla
 ## What Makes It Different
 
 Release Sentinel does not run every test blindly. It uses risk and coverage to choose the right level of validation, then explains the decision with evidence. It can approve low-risk changes quickly, block product bugs, and route ambiguous cases to people.
+
+The dashboard is designed for judges: a single screen can trigger multiple release scenarios, refresh as new verdicts arrive, and show the audit trail behind each decision.
 
 ## Coding Agents Bonus (AI-Assisted Development)
 

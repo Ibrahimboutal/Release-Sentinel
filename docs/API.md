@@ -57,3 +57,35 @@ Output: full `ReleaseVerdict`.
 When the verdict requires human review and Orchestrator credentials are configured, the response includes `action_center_task_id`.
 
 Scenarios are local demo helpers: `auto`, `happy`, `failing`, `ambiguous`, and `timeout`. In the UiPath-connected version, the runner uses real Test Manager executions instead of scenario fixtures.
+
+## POST /api/demo-run
+
+Runs a pre-wired demo scenario, persists `artifacts/release_verdict.json`, appends `artifacts/run_history.jsonl`, and powers the dashboard scenario buttons.
+
+Input:
+
+```json
+{
+  "scenario": "ambiguous",
+  "sync_coverage": false,
+  "runner": "auto"
+}
+```
+
+Optional `manifest_path` may point to a manifest inside this workspace. Scenarios are `happy`, `failing`, `ambiguous`, and `timeout`.
+
+Output: full `ReleaseVerdict`.
+
+## GET /api/latest-verdict
+
+Returns the latest persisted verdict from `artifacts/release_verdict.json`.
+
+## GET /api/run-history
+
+Returns compact recent run records for dashboard history.
+
+Example:
+
+```http
+GET /api/run-history?limit=6
+```

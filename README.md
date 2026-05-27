@@ -34,7 +34,8 @@ Core modules:
 - `src/releasesentinel/coverage_sync.py`: live Test Manager test-set sync via `uip tm testsets list`.
 - `src/releasesentinel/flakiness.py`: historical flakiness scoring from Test Manager execution logs.
 - `src/releasesentinel/api.py`: API Workflow-friendly HTTP endpoints.
-- `web/templates/dashboard.html`: a local evidence dashboard for the demo.
+- `src/releasesentinel/io.py`: verdict persistence plus compact JSONL run history.
+- `web/templates/dashboard.html`: a local evidence dashboard with one-click demo scenarios and live polling.
 
 ## Agent Type
 
@@ -57,7 +58,7 @@ python -m releasesentinel run --scenario failing --pretty
 python -m releasesentinel serve --port 8000
 ```
 
-Open `http://127.0.0.1:8000/dashboard` after generating a verdict.
+Open `http://127.0.0.1:8000/dashboard` after generating a verdict, or use the dashboard scenario buttons to generate approve, block, review, and timeout runs without leaving the browser.
 
 `PYTEST_DISABLE_PLUGIN_AUTOLOAD` keeps unrelated machine-level pytest plugins from loading into the project test run.
 
@@ -94,13 +95,16 @@ The API is designed so UiPath API Workflows or Agent Builder tools can call dete
 - `POST /api/select-tests`
 - `POST /api/triage-results`
 - `POST /api/release-verdict`
+- `POST /api/demo-run`
 - `GET /api/latest-verdict`
+- `GET /api/run-history`
 
 Input/output files:
 
 - `data/change_manifest.json`: changed files, requirement text, affected capabilities, risk tags.
 - `data/coverage_map.json`: capability-to-testset and testcase mapping.
 - `artifacts/release_verdict.json`: risk score, selected tests, execution evidence, triage, decision, human-review state.
+- `artifacts/run_history.jsonl`: compact local audit trail used by the live dashboard.
 
 ## UiPath Components
 
@@ -131,7 +135,8 @@ This project qualifies for the hackathon bonus points under the Platform Usage c
 2. Run Release Sentinel and show the risk drivers.
 3. Show selected Test Cloud suites and execution IDs.
 4. Show failure triage: product bug, test fragility, data issue, timeout, or needs human review.
-5. Show the dashboard verdict and the Action Center handoff for ambiguous cases.
+5. Use the dashboard buttons to switch between approve, block, review, and timeout outcomes.
+6. Show the dashboard verdict, run history, and Action Center handoff for ambiguous cases.
 
 ## Submission Assets
 

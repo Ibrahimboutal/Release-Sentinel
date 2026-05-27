@@ -27,4 +27,6 @@ The app is intentionally small. Its job is to give the testing agent a believabl
 
 - FastAPI endpoints are shaped for API Workflow tools.
 - The dashboard summarizes verdict, risk drivers, selected test sets, execution IDs, triage, and next actions.
-- JSON artifacts make the run auditable and easy to attach to Devpost or a change-management record.
+- One-click dashboard scenarios trigger approve, block, review, and timeout runs for a crisp live demo.
+- Live polling reloads the dashboard when a new verdict lands from the CLI, API, or browser controls.
+- JSON artifacts and JSONL run history make each run auditable and easy to attach to Devpost or a change-management record.

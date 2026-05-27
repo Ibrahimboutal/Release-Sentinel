@@ -70,7 +70,17 @@ Narration:
 
 "The release verdict is auditable: risk drivers, selected test sets, execution evidence, triage, and next action. Ambiguous cases go to Action Center instead of being silently approved."
 
+Click the dashboard scenario buttons:
+
+- Approve: low-risk happy path.
+- Block: product bug in eligibility routing.
+- Review: ambiguous evidence routed to a human.
+- Timeout: execution failure that cannot be mistaken for a pass.
+
+Narration:
+
+"For the video, the dashboard can drive the full story from one screen. It also keeps a short run history, which is exactly what a release manager needs when comparing multiple candidate builds."
+
 ## 4:45-5:00 Close
 
 "Release Sentinel helps enterprise teams move faster without surrendering control: agents decide what to test, UiPath Test Cloud executes and stores evidence, and humans stay in charge at the release boundary."
-
