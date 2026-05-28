@@ -8,7 +8,6 @@ from pydantic import BaseModel
 
 from .models import ChangeManifest, CoverageMap, ReleaseVerdict
 
-
 T = TypeVar("T", bound=BaseModel)
 
 

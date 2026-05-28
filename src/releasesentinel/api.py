@@ -7,10 +7,23 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .io import DATA_DIR, DEFAULT_MANIFEST, DEFAULT_VERDICT, load_coverage, load_history, load_manifest, read_json
-from .models import AnalyzeRequest, DemoRunRequest, SelectTestsRequest, TriageRequest, VerdictRequest
+from .io import (
+    DATA_DIR,
+    DEFAULT_MANIFEST,
+    DEFAULT_VERDICT,
+    load_coverage,
+    load_history,
+    load_manifest,
+    read_json,
+)
+from .models import (
+    AnalyzeRequest,
+    DemoRunRequest,
+    SelectTestsRequest,
+    TriageRequest,
+    VerdictRequest,
+)
 from .pipeline import ReleaseSentinelPipeline
-
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB_DIR = ROOT / "web"
