@@ -16,6 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
+  "pytest-cov>=4.0",
   "httpx>=0.27",
   "ruff>=0.4",
   "black>=24.0",
@@ -30,6 +31,26 @@ release-sentinel = "releasesentinel.cli:main"
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.coverage.run]
+branch = true
+source = ["src/releasesentinel"]
+omit = ["*/tests/*", "*/__main__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+precision = 2
+show_missing = true
+skip_covered = false
 
 [tool.ruff]
 target-version = "py311"

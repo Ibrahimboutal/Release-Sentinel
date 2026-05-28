@@ -7,8 +7,24 @@ services:
       - "8000:8000"
     environment:
       - RELEASE_SENTINEL_RUNNER=local
+      - RELEASE_SENTINEL_FLAKINESS_THRESHOLD=0.35
       - PYTHONUNBUFFERED=1
     volumes:
       - ./data:/app/data
       - ./artifacts:/app/artifacts
     command: python -m releasesentinel serve --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+    # OPTIONAL: For UiPath cloud integration, uncomment and set these variables:
+    # environment:
+    #   - RELEASE_SENTINEL_RUNNER=uipath
+    #   - RELEASE_SENTINEL_ORCHESTRATOR_URL=https://cloud.uipath.com/org/tenant/orchestrator_
+    #   - RELEASE_SENTINEL_ORCHESTRATOR_TOKEN=<your-bearer-token>
+    #   - RELEASE_SENTINEL_TEST_MANAGER_FOLDER_KEY=<folder-uuid>
+    #   - RELEASE_SENTINEL_TASK_CATALOG=ReleaseGateReviews
+    #   - RELEASE_SENTINEL_FLAKINESS_THRESHOLD=0.35
