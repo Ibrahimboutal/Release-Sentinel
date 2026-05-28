@@ -181,15 +181,6 @@ class TestExecution(BaseModel):
     logs: list[TestCaseLog] = Field(default_factory=list)
     raw: dict[str, Any] = Field(default_factory=dict)
 
-    @field_validator("finished_at")
-    @classmethod
-    def validate_finished_at(cls, v: datetime | None, info) -> datetime | None:
-        """Ensure finished_at is after started_at if provided."""
-        if v is not None and hasattr(info, "data") and "started_at" in info.data:
-            if v < info.data["started_at"]:
-                raise ValueError("finished_at must be after started_at")
-        return v
-
     @field_validator("test_set_key", "test_set_name")
     @classmethod
     def validate_non_empty_keys(cls, v: str) -> str:
