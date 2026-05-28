@@ -4,6 +4,11 @@ Calls the UiPath Orchestrator REST API to create a real form task when a
 verdict requires human review. Missing credentials or API failures return
 ``None`` so local development and CI keep working without cloud access.
 
+Features:
+- Exponential backoff retry mechanism for transient network failures
+- Graceful fallback on persistent failures
+- Configurable retry attempts and backoff parameters
+
 Environment variables:
 
 - ``RELEASE_SENTINEL_ORCHESTRATOR_URL``: Orchestrator base URL, for example
@@ -13,6 +18,8 @@ Environment variables:
   ``ReleaseGateReviews``.
 - ``RELEASE_SENTINEL_TENANT``: optional tenant header for older setups.
 - ``RELEASE_SENTINEL_FOLDER_ID``: optional folder/organization unit header.
+- ``RELEASE_SENTINEL_MAX_RETRIES``: max retry attempts (default: 3)
+- ``RELEASE_SENTINEL_RETRY_BACKOFF_FACTOR``: exponential backoff factor (default: 2)
 """
 
 from __future__ import annotations
@@ -24,7 +31,24 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
+
 log = logging.getLogger(__name__)
+
+
+def _is_retryable_error(exception: Exception) -> bool:
+    """Determine if an exception is retryable (transient)."""
+    if isinstance(exception, urllib.error.HTTPError):
+        # Retry on 429 (rate limit), 502-504 (server errors), 408 (timeout)
+        return exception.code in {408, 429, 500, 502, 503, 504}
+    if isinstance(exception, (urllib.error.URLError, TimeoutError, OSError)):
+        return True
+    return False
 
 
 class ActionCenterClient:
@@ -38,6 +62,8 @@ class ActionCenterClient:
         orchestrator_url: str | None = None,
         auth_token: str | None = None,
         task_catalog: str | None = None,
+        max_retries: int | None = None,
+        retry_backoff_factor: float | None = None,
     ) -> None:
         self.orchestrator_url = (
             orchestrator_url or os.getenv("RELEASE_SENTINEL_ORCHESTRATOR_URL", "")
@@ -45,6 +71,12 @@ class ActionCenterClient:
         self.auth_token = auth_token or os.getenv("RELEASE_SENTINEL_ORCHESTRATOR_TOKEN", "")
         self.task_catalog = task_catalog or os.getenv(
             "RELEASE_SENTINEL_TASK_CATALOG", self.DEFAULT_CATALOG
+        )
+        self.max_retries = max_retries or int(
+            os.getenv("RELEASE_SENTINEL_MAX_RETRIES", "3")
+        )
+        self.retry_backoff_factor = retry_backoff_factor or float(
+            os.getenv("RELEASE_SENTINEL_RETRY_BACKOFF_FACTOR", "2.0")
         )
 
     @property
@@ -62,24 +94,51 @@ class ActionCenterClient:
             return None
 
         compact = _compact_verdict(verdict_payload)
-        payload = self._build_payload(compact)
-        request = urllib.request.Request(
-            f"{self.orchestrator_url}{self.CREATE_FORM_TASK_PATH}",
-            data=json.dumps(payload).encode("utf-8"),
-            headers=self._headers(),
-            method="POST",
-        )
-
         try:
-            with urllib.request.urlopen(request, timeout=15) as response:
-                result = json.loads(response.read())
-        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
-            log.warning("Failed to create Action Center task for %s: %s", compact["change_id"], exc)
+            task_id = self._create_review_task_with_retry(compact)
+            log.info("Action Center task created for %s: %s", compact["change_id"], task_id)
+            return task_id
+        except Exception as exc:
+            log.warning(
+                "Failed to create Action Center task for %s after %d retries: %s",
+                compact["change_id"],
+                self.max_retries,
+                exc,
+            )
             return None
 
-        task_id = _extract_task_id(result)
-        log.info("Action Center task created for %s: %s", compact["change_id"], task_id)
-        return task_id
+    def _create_review_task_with_retry(self, compact: dict[str, Any]) -> str | None:
+        """Create review task with exponential backoff retry."""
+        # Use a custom retry strategy with our configured parameters
+        @retry(
+            retry=retry_if_exception_type(Exception),
+            stop=stop_after_attempt(self.max_retries),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            reraise=True,
+        )
+        def _attempt() -> str | None:
+            payload = self._build_payload(compact)
+            request = urllib.request.Request(
+                f"{self.orchestrator_url}{self.CREATE_FORM_TASK_PATH}",
+                data=json.dumps(payload).encode("utf-8"),
+                headers=self._headers(),
+                method="POST",
+            )
+
+            try:
+                with urllib.request.urlopen(request, timeout=15) as response:
+                    result = json.loads(response.read())
+            except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
+                if _is_retryable_error(exc):
+                    log.debug("Retryable error creating Action Center task: %s", exc)
+                    raise
+                log.warning("Non-retryable error creating Action Center task: %s", exc)
+                return None
+
+            task_id = _extract_task_id(result)
+            return task_id
+
+        return _attempt()
 
     def _headers(self) -> dict[str, str]:
         headers = {

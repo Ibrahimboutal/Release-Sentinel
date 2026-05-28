@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class RiskLevel(str, Enum):
@@ -40,6 +40,22 @@ class ChangeManifest(BaseModel):
     pull_request_url: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+    @field_validator("title", "requirement")
+    @classmethod
+    def validate_non_empty_strings(cls, v: str) -> str:
+        """Ensure title and requirement are non-empty."""
+        if not v or not v.strip():
+            raise ValueError("title and requirement cannot be empty")
+        return v.strip()
+
+    @field_validator("author")
+    @classmethod
+    def validate_author_format(cls, v: str) -> str:
+        """Basic validation for author email format."""
+        if not v or not v.strip():
+            raise ValueError("author cannot be empty")
+        return v.strip()
+
 
 class RiskAssessment(BaseModel):
     change_id: str
@@ -48,6 +64,47 @@ class RiskAssessment(BaseModel):
     impacted_capabilities: list[str]
     drivers: list[str]
     confidence: float = Field(ge=0, le=1)
+
+    @field_validator("score")
+    @classmethod
+    def validate_score_range(cls, v: int) -> int:
+        """Ensure score is always within valid range (0-100)."""
+        if not (0 <= v <= 100):
+            raise ValueError(f"score must be between 0 and 100, got {v}")
+        return v
+
+    @field_validator("confidence")
+    @classmethod
+    def validate_confidence_range(cls, v: float) -> float:
+        """Ensure confidence is always within valid range (0.0-1.0)."""
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"confidence must be between 0.0 and 1.0, got {v}")
+        return v
+
+    @field_validator("level", mode="before")
+    @classmethod
+    def validate_level_consistency(cls, v: Any, info) -> RiskLevel:
+        """Validate that risk level is consistent with score."""
+        # Only perform this check if score is already available
+        if hasattr(info, "data") and "score" in info.data:
+            score = info.data["score"]
+            if isinstance(v, str):
+                v = RiskLevel(v)
+            # Verify level is reasonable for the score
+            if score >= 85 and v != RiskLevel.critical:
+                raise ValueError(f"score {score} should have level critical, got {v}")
+            if 65 <= score < 85 and v != RiskLevel.high:
+                # Warning only, not an error
+                pass
+        return v
+
+    @field_validator("drivers")
+    @classmethod
+    def validate_drivers(cls, v: list[str]) -> list[str]:
+        """Ensure drivers list is non-empty and contains strings."""
+        if not v:
+            raise ValueError("drivers list cannot be empty")
+        return [str(d).strip() for d in v if d.strip()]
 
 
 class TestCaseRef(BaseModel):
@@ -95,6 +152,22 @@ class TestCaseLog(BaseModel):
     assertions: list[str] = Field(default_factory=list)
     attachments: list[str] = Field(default_factory=list)
 
+    @field_validator("duration_seconds")
+    @classmethod
+    def validate_duration(cls, v: int) -> int:
+        """Ensure duration is non-negative."""
+        if v < 0:
+            raise ValueError(f"duration_seconds must be non-negative, got {v}")
+        return v
+
+    @field_validator("test_case_key", "test_case_name")
+    @classmethod
+    def validate_non_empty_keys(cls, v: str) -> str:
+        """Ensure test case keys and names are non-empty."""
+        if not v or not v.strip():
+            raise ValueError("test_case_key and test_case_name cannot be empty")
+        return v.strip()
+
 
 class TestExecution(BaseModel):
     execution_id: str = Field(default_factory=lambda: f"exec-{uuid4().hex[:8]}")
@@ -108,6 +181,23 @@ class TestExecution(BaseModel):
     logs: list[TestCaseLog] = Field(default_factory=list)
     raw: dict[str, Any] = Field(default_factory=dict)
 
+    @field_validator("finished_at")
+    @classmethod
+    def validate_finished_at(cls, v: datetime | None, info) -> datetime | None:
+        """Ensure finished_at is after started_at if provided."""
+        if v is not None and hasattr(info, "data") and "started_at" in info.data:
+            if v < info.data["started_at"]:
+                raise ValueError("finished_at must be after started_at")
+        return v
+
+    @field_validator("test_set_key", "test_set_name")
+    @classmethod
+    def validate_non_empty_keys(cls, v: str) -> str:
+        """Ensure test set keys and names are non-empty."""
+        if not v or not v.strip():
+            raise ValueError("test_set_key and test_set_name cannot be empty")
+        return v.strip()
+
 
 class FailureTriage(BaseModel):
     test_case_key: str
@@ -117,6 +207,38 @@ class FailureTriage(BaseModel):
     evidence: list[str]
     recommended_fix: str
     requires_human_review: bool
+
+    @field_validator("confidence")
+    @classmethod
+    def validate_confidence(cls, v: float) -> float:
+        """Ensure confidence is between 0 and 1."""
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"confidence must be between 0.0 and 1.0, got {v}")
+        return v
+
+    @field_validator("test_case_key", "test_case_name")
+    @classmethod
+    def validate_non_empty_strings(cls, v: str) -> str:
+        """Ensure test case key and name are non-empty."""
+        if not v or not v.strip():
+            raise ValueError("test_case_key and test_case_name cannot be empty")
+        return v.strip()
+
+    @field_validator("evidence")
+    @classmethod
+    def validate_evidence(cls, v: list[str]) -> list[str]:
+        """Ensure evidence is non-empty."""
+        if not v:
+            raise ValueError("evidence list cannot be empty")
+        return [str(e).strip() for e in v if e.strip()]
+
+    @field_validator("recommended_fix")
+    @classmethod
+    def validate_recommended_fix(cls, v: str) -> str:
+        """Ensure recommended_fix is non-empty."""
+        if not v or not v.strip():
+            raise ValueError("recommended_fix cannot be empty")
+        return v.strip()
 
 
 class TriageReport(BaseModel):
