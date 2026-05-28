@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  release-sentinel:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - RELEASE_SENTINEL_RUNNER=local
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+    command: python -m releasesentinel serve --host 0.0.0.0 --port 8000

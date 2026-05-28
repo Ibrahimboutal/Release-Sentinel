@@ -50,33 +50,62 @@ Release Sentinel utilizes **Coded Agents** built with Python and Pydantic models
 
 ## Quickstart
 
+### 5-Minute Local Demo
 
-```powershell
-python -m pip install -e ".[dev]"
-$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; python -m pytest
+```bash
+# 1. Install
+make install
+
+# 2. Run a test scenario
 python -m releasesentinel run --scenario failing --pretty
+
+# 3. Start dashboard server
 python -m releasesentinel serve --port 8000
+
+# 4. Open browser
+open http://127.0.0.1:8000/dashboard
 ```
 
-Open `http://127.0.0.1:8000/dashboard` after generating a verdict, or use the dashboard scenario buttons to generate approve, block, review, and timeout runs without leaving the browser.
+The dashboard shows release verdict, risk drivers, selected tests, execution evidence, and one-click scenario controls.
 
-`PYTEST_DISABLE_PLUGIN_AUTOLOAD` keeps unrelated machine-level pytest plugins from loading into the project test run.
+### Using Make Targets
+
+```bash
+make test              # Run 22 tests
+make lint              # Check code quality
+make format            # Auto-format code
+make check             # All quality gates
+make docker-build      # Build Docker image
+make docker-up         # Start Docker container
+make help              # View all tasks
+```
 
 Use these scenarios for the demo:
 
-```powershell
+```bash
 python -m releasesentinel run --manifest data/fixtures/low_risk_manifest.json --scenario happy --pretty
 python -m releasesentinel run --scenario failing --pretty
 python -m releasesentinel run --manifest data/fixtures/ambiguous_manifest.json --scenario ambiguous --pretty
 python -m releasesentinel run --scenario timeout --pretty
 ```
 
-For the hackathon submission, use the UiPath-backed runner with a real Test Manager folder key configured in UiPath Labs:
+### Deployment
 
-```powershell
-$env:RELEASE_SENTINEL_RUNNER='uipath'
+Deploy with Docker:
+
+```bash
+make docker-build
+make docker-up
+```
+
+Or run on UiPath cloud:
+
+```bash
+export RELEASE_SENTINEL_RUNNER='uipath'
 python -m releasesentinel run --scenario failing --pretty --runner uipath --sync-coverage
 ```
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed setup and troubleshooting.
 
 Optional cloud-review variables:
 
@@ -86,6 +115,32 @@ $env:RELEASE_SENTINEL_ORCHESTRATOR_TOKEN='<bearer-token>'
 $env:RELEASE_SENTINEL_TASK_CATALOG='ReleaseGateReviews'
 $env:RELEASE_SENTINEL_FLAKINESS_THRESHOLD='0.35'
 ```
+
+## Troubleshooting
+
+**Tests fail with import errors?**
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+**Dashboard shows "No verdict generated"?**
+
+Generate one first:
+
+```bash
+python -m releasesentinel run --scenario happy --pretty
+```
+
+**UiPath CLI not found?**
+
+Install globally:
+
+```bash
+npm install -g @uipath/cli
+```
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#troubleshooting) for more help.
 
 ## API Contracts
 
@@ -145,6 +200,14 @@ This project qualifies for the hackathon bonus points under the Platform Usage c
 - Presentation outline: [submission/presentation-outline.md](submission/presentation-outline.md)
 - Editable PowerPoint deck: [release-sentinel-agenthack.pptx](outputs/manual-release-sentinel/presentations/release-sentinel/output/release-sentinel-agenthack.pptx)
 - UiPath setup: [docs/UIPATH_SETUP.md](docs/UIPATH_SETUP.md)
+
+## Contributing
+
+Want to improve Release Sentinel? See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Development setup
+- Testing guidelines  
+- Code quality standards
+- PR submission process
 
 ## License
 

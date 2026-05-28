@@ -7,7 +7,14 @@ from pathlib import Path
 import uvicorn
 
 from .api import app
-from .io import DEFAULT_COVERAGE, DEFAULT_MANIFEST, DEFAULT_VERDICT, load_coverage, load_manifest, save_verdict
+from .io import (
+    DEFAULT_COVERAGE,
+    DEFAULT_MANIFEST,
+    DEFAULT_VERDICT,
+    load_coverage,
+    load_manifest,
+    save_verdict,
+)
 from .pipeline import ReleaseSentinelPipeline
 
 

@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Literal, Protocol
 from uuid import uuid4
 
 from .models import TestCaseLog, TestExecution, TestPlan
-
 
 Scenario = Literal["auto", "happy", "failing", "ambiguous", "timeout"]
 

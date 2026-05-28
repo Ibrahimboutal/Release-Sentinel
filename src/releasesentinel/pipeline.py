@@ -12,7 +12,6 @@ from .io import DEFAULT_VERDICT, load_coverage, save_verdict
 from .models import ChangeManifest, CoverageMap, ReleaseVerdict
 from .runners import Scenario, SimulatedTestRunner, TestRunner, UiPathTestManagerRunner
 
-
 RunnerMode = Literal["auto", "simulated", "uipath"]
 
 

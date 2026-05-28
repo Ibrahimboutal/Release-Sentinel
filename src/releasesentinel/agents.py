@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import os
 import re
 from collections import OrderedDict
-import os
 
+from .flakiness import DEFAULT_FLAKINESS_THRESHOLD
 from .models import (
     ChangeManifest,
     CoverageMap,
@@ -17,8 +18,6 @@ from .models import (
     TriageCategory,
     TriageReport,
 )
-from .flakiness import DEFAULT_FLAKINESS_THRESHOLD
-
 
 HIGH_RISK_TERMS = {
     "eligibility": 18,

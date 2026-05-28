@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-
 ClaimType = Literal["auto", "home", "health", "travel"]
 ClaimRouteName = Literal["straight_through", "adjuster_review", "siu_review", "manual_exception"]
 
