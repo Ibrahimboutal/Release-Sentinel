@@ -5,6 +5,7 @@ import re
 from collections import OrderedDict
 
 from .flakiness import DEFAULT_FLAKINESS_THRESHOLD
+from .heuristics import get_heuristics
 from .models import (
     ChangeManifest,
     CoverageMap,
@@ -19,64 +20,29 @@ from .models import (
     TriageReport,
 )
 
-HIGH_RISK_TERMS = {
-    "eligibility": 18,
-    "routing": 16,
-    "fraud": 18,
-    "payment": 16,
-    "settlement": 14,
-    "policy": 10,
-    "human review": 12,
-    "exception": 10,
-    "sla": 8,
-    "security": 18,
-    "compliance": 16,
-}
-
-FILE_RISK_RULES = {
-    "eligibility": 18,
-    "routing": 14,
-    "workflow": 12,
-    "agent": 12,
-    "api": 10,
-    "tests": -6,
-    "docs": -10,
-}
-
-TAG_RISK_RULES = {
-    "customer_impact": 18,
-    "regulated_decision": 18,
-    "human_in_loop": 10,
-    "new_logic": 12,
-    "minor_copy": -10,
-    "test_only": -15,
-    "simulate_failure": 0,
-    "simulate_ambiguous": 0,
-    "simulate_timeout": 0,
-}
-
 
 class ChangeImpactAgent:
     def analyze(self, manifest: ChangeManifest, coverage: CoverageMap) -> RiskAssessment:
+        heuristics = get_heuristics()
         text = f"{manifest.title} {manifest.requirement}".lower()
         score = 15
         drivers: list[str] = ["base change risk: 15"]
 
-        for term, weight in HIGH_RISK_TERMS.items():
+        for term, weight in heuristics.high_risk_terms.items():
             if term in text:
                 score += weight
                 drivers.append(f"requirement mentions {term}: +{weight}")
 
         for file_path in manifest.changed_files:
             lower_path = file_path.lower()
-            for marker, weight in FILE_RISK_RULES.items():
+            for marker, weight in heuristics.file_risk_rules.items():
                 if marker in lower_path:
                     score += weight
                     sign = "+" if weight >= 0 else ""
                     drivers.append(f"changed file matches {marker}: {sign}{weight}")
 
         for tag in manifest.risk_tags:
-            weight = TAG_RISK_RULES.get(tag, 0)
+            weight = heuristics.tag_risk_rules.get(tag, 0)
             score += weight
             if weight:
                 sign = "+" if weight >= 0 else ""
@@ -120,11 +86,13 @@ class ChangeImpactAgent:
 
     @staticmethod
     def _level(score: int) -> RiskLevel:
-        if score >= 85:
+        heuristics = get_heuristics()
+        thresholds = heuristics.risk_level_thresholds
+        if score >= thresholds.get("critical", 85):
             return RiskLevel.critical
-        if score >= 65:
+        if score >= thresholds.get("high", 65):
             return RiskLevel.high
-        if score >= 38:
+        if score >= thresholds.get("medium", 38):
             return RiskLevel.medium
         return RiskLevel.low
 
@@ -170,11 +138,25 @@ class TestPlannerAgent:
 
 
 class FailureTriageAgent:
-    def __init__(self, flakiness_threshold: float | None = None) -> None:
+    def __init__(
+        self,
+        flakiness_threshold: float | None = None,
+        llm_model: str | None = None,
+        llm_api_key: str | None = None,
+        llm_provider: str = "openai",
+    ) -> None:
         self.flakiness_threshold = (
             flakiness_threshold
             if flakiness_threshold is not None
             else _float_env("RELEASE_SENTINEL_FLAKINESS_THRESHOLD", DEFAULT_FLAKINESS_THRESHOLD)
+        )
+        # Initialize LLM client for semantic triage (optional)
+        from .llm_triage import get_llm_client
+
+        self.llm_client = get_llm_client(
+            model=llm_model,
+            api_key=llm_api_key,
+            provider=llm_provider,
         )
 
     def triage(
@@ -230,40 +212,81 @@ class FailureTriageAgent:
     ) -> FailureTriage:
         normalized = message.lower()
 
-        if "timeout" in normalized or "robot unavailable" in normalized:
+        # First, try heuristic pattern matching
+        heuristic_result = self._try_heuristic_classification(
+            normalized, key, name, message, manifest, flakiness_index
+        )
+        if heuristic_result:
+            return heuristic_result
+
+        # If heuristics don't match, try semantic classification with LLM
+        if self.llm_client.is_available:
+            llm_result = self._try_semantic_classification(message, name, manifest)
+            if llm_result:
+                return llm_result
+
+        # Fallback to human review if nothing matches
+        return FailureTriage(
+            test_case_key=key,
+            test_case_name=name,
+            category=TriageCategory.needs_human_review,
+            confidence=0.52,
+            evidence=[message or "No structured assertion message was available."],
+            recommended_fix="Route to QA lead in Action Center for classification before release.",
+            requires_human_review=True,
+        )
+
+    def _try_heuristic_classification(
+        self,
+        normalized: str,
+        key: str,
+        name: str,
+        message: str,
+        manifest: ChangeManifest,
+        flakiness_index: float,
+    ) -> FailureTriage | None:
+        """Try to classify using heuristic patterns."""
+        heuristics = get_heuristics()
+        patterns = heuristics.triage_patterns
+
+        # Check environment issue patterns
+        if any(pattern in normalized for pattern in patterns["environment_issue"]["patterns"]):
             return FailureTriage(
                 test_case_key=key,
                 test_case_name=name,
                 category=TriageCategory.environment_issue,
-                confidence=0.86,
+                confidence=patterns["environment_issue"]["confidence"],
                 evidence=[message, "Execution did not reach assertions."],
-                recommended_fix="Check robot capacity, Test Cloud execution folder, and retry once capacity is available.",
+                recommended_fix=patterns["environment_issue"]["recommended_fix"],
                 requires_human_review=True,
             )
 
-        if "selector" in normalized or "element not found" in normalized:
+        # Check test fragility patterns
+        if any(pattern in normalized for pattern in patterns["test_fragility"]["patterns"]):
             return FailureTriage(
                 test_case_key=key,
                 test_case_name=name,
                 category=TriageCategory.test_fragility,
-                confidence=0.78,
+                confidence=patterns["test_fragility"]["confidence"],
                 evidence=[message, "Failure pattern points to UI locator brittleness."],
-                recommended_fix="Regenerate the UI descriptor or use Computer Vision fallback before blocking release.",
+                recommended_fix=patterns["test_fragility"]["recommended_fix"],
                 requires_human_review=False,
             )
 
-        if "fixture" in normalized or "test data" in normalized:
+        # Check test data issue patterns
+        if any(pattern in normalized for pattern in patterns["test_data_issue"]["patterns"]):
             return FailureTriage(
                 test_case_key=key,
                 test_case_name=name,
                 category=TriageCategory.test_data_issue,
-                confidence=0.81,
+                confidence=patterns["test_data_issue"]["confidence"],
                 evidence=[message, "Assertions reference missing or stale synthetic data."],
-                recommended_fix="Refresh the ClaimsPilot test data queue and rerun the affected test case.",
+                recommended_fix=patterns["test_data_issue"]["recommended_fix"],
                 requires_human_review=False,
             )
 
-        if "expected route" in normalized or "eligibility" in normalized or "policy" in normalized:
+        # Check eligibility/routing patterns
+        if any(pattern in normalized for pattern in patterns["eligibility_routing"]["patterns"]):
             if flakiness_index >= self.flakiness_threshold:
                 return FailureTriage(
                     test_case_key=key,
@@ -281,20 +304,48 @@ class FailureTriageAgent:
                 test_case_key=key,
                 test_case_name=name,
                 category=TriageCategory.product_bug,
-                confidence=0.9,
+                confidence=patterns["eligibility_routing"]["confidence"],
                 evidence=[message, f"Change {manifest.change_id} modifies decisioning/routing behavior."],
-                recommended_fix="Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
+                recommended_fix=patterns["eligibility_routing"]["recommended_fix"],
                 requires_human_review=False,
             )
 
-        return FailureTriage(
-            test_case_key=key,
+        return None
+
+    def _try_semantic_classification(
+        self,
+        message: str,
+        name: str,
+        manifest: ChangeManifest,
+    ) -> FailureTriage | None:
+        """Try to classify using LLM semantic analysis."""
+        classification = self.llm_client.classify_failure(
+            error_message=message,
             test_case_name=name,
-            category=TriageCategory.needs_human_review,
-            confidence=0.52,
-            evidence=[message or "No structured assertion message was available."],
-            recommended_fix="Route to QA lead in Action Center for classification before release.",
-            requires_human_review=True,
+            context=f"Change: {manifest.change_id}, Title: {manifest.title}",
+        )
+
+        if not classification:
+            return None
+
+        category_str = classification.get("category", "needs_human_review")
+        # Map string to TriageCategory enum
+        try:
+            category = TriageCategory(category_str)
+        except ValueError:
+            category = TriageCategory.needs_human_review
+
+        confidence = float(classification.get("confidence", 0.5))
+        reasoning = classification.get("reasoning", "LLM semantic analysis")
+
+        return FailureTriage(
+            test_case_key=name.split("-")[0] if "-" in name else name[:8],
+            test_case_name=name,
+            category=category,
+            confidence=confidence,
+            evidence=[message, f"Semantic analysis: {reasoning}"],
+            recommended_fix="Review the classification provided by semantic analysis above.",
+            requires_human_review=category == TriageCategory.needs_human_review,
         )
 
 

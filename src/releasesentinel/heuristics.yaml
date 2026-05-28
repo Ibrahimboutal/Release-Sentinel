@@ -1,0 +1,76 @@
+# Heuristic Rules for Risk Scoring and Triage
+# Configuration can be customized per enterprise environment
+
+# High-risk terms that appear in change requirement text
+high_risk_terms:
+  eligibility: 18
+  routing: 16
+  fraud: 18
+  payment: 16
+  settlement: 14
+  policy: 10
+  human_review: 12
+  exception: 10
+  sla: 8
+  security: 18
+  compliance: 16
+
+# File path patterns and their risk weights
+file_risk_rules:
+  eligibility: 18
+  routing: 14
+  workflow: 12
+  agent: 12
+  api: 10
+  tests: -6
+  docs: -10
+
+# Risk tags applied by change authors
+tag_risk_rules:
+  customer_impact: 18
+  regulated_decision: 18
+  human_in_loop: 10
+  new_logic: 12
+  minor_copy: -10
+  test_only: -15
+  simulate_failure: 0
+  simulate_ambiguous: 0
+  simulate_timeout: 0
+
+# Risk level thresholds (score ranges)
+risk_level_thresholds:
+  critical: 85
+  high: 65
+  medium: 38
+  low: 0
+
+# Failure triage heuristic patterns
+triage_patterns:
+  environment_issue:
+    patterns:
+      - timeout
+      - robot unavailable
+    confidence: 0.86
+    recommended_fix: "Check robot capacity, Test Cloud execution folder, and retry once capacity is available."
+    
+  test_fragility:
+    patterns:
+      - selector
+      - element not found
+    confidence: 0.78
+    recommended_fix: "Regenerate the UI descriptor or use Computer Vision fallback before blocking release."
+    
+  test_data_issue:
+    patterns:
+      - fixture
+      - test data
+    confidence: 0.81
+    recommended_fix: "Refresh the ClaimsPilot test data queue and rerun the affected test case."
+    
+  eligibility_routing:
+    patterns:
+      - expected route
+      - eligibility
+      - policy
+    confidence: 0.90
+    recommended_fix: "Review the eligibility/routing rule change and add an explicit approval for affected claim classes."
