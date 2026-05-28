@@ -1,7 +1,7 @@
 {
   "change_id": "chg-claimpilot-042",
-  "generated_at": "2026-05-27T17:37:30.610651Z",
-  "decision": "block",
+  "generated_at": "2026-05-27T19:22:40.604730Z",
+  "decision": "needs_review",
   "risk": {
     "change_id": "chg-claimpilot-042",
     "score": 100,
@@ -175,22 +175,74 @@
   },
   "executions": [
     {
-      "execution_id": "tm-sim-e5bbf25d",
+      "execution_id": "tm-sim-7fd25745",
       "test_set_key": "SMOKE",
       "test_set_name": "ClaimsPilot smoke release gate",
       "source": "simulated",
-      "status": "finished",
-      "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "status": "timed_out",
+      "result": "inconclusive",
+      "started_at": "2026-05-27T19:22:40.603734Z",
+      "finished_at": "2026-05-27T19:22:40.603734Z",
       "logs": [
         {
-          "id": "log-4ff36c97",
+          "id": "log-69748899",
           "test_case_key": "TC-SMOKE-001",
           "test_case_name": "Claim intake creates an audit event",
+          "status": "timed_out",
+          "result": "inconclusive",
+          "duration_seconds": 900,
+          "message": "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "assertions": [],
+          "attachments": []
+        },
+        {
+          "id": "log-e3b590c2",
+          "test_case_key": "TC-SMOKE-002",
+          "test_case_name": "Low-risk claim routes straight through",
           "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
+          "message": "All assertions passed.",
+          "assertions": [
+            "claim persisted",
+            "audit event emitted"
+          ],
+          "attachments": []
+        }
+      ],
+      "raw": {
+        "scenario": "timeout",
+        "note": "Local deterministic stand-in for UiPath Test Manager."
+      }
+    },
+    {
+      "execution_id": "tm-sim-6036b974",
+      "test_set_key": "ELIGIBILITY_TARGETED",
+      "test_set_name": "Eligibility and routing targeted checks",
+      "source": "simulated",
+      "status": "timed_out",
+      "result": "inconclusive",
+      "started_at": "2026-05-27T19:22:40.603734Z",
+      "finished_at": "2026-05-27T19:22:40.603734Z",
+      "logs": [
+        {
+          "id": "log-3b47c963",
+          "test_case_key": "TC-ELIGIBILITY-101",
+          "test_case_name": "Injury claim requires adjuster review",
+          "status": "timed_out",
+          "result": "inconclusive",
+          "duration_seconds": 900,
+          "message": "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "assertions": [],
+          "attachments": []
+        },
+        {
+          "id": "log-def59f31",
+          "test_case_key": "TC-ELIGIBILITY-102",
+          "test_case_name": "High-value claim blocks straight-through settlement",
+          "status": "finished",
+          "result": "passed",
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -199,71 +251,7 @@
           "attachments": []
         },
         {
-          "id": "log-93c97d4f",
-          "test_case_key": "TC-SMOKE-002",
-          "test_case_name": "Low-risk claim routes straight through",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-SMOKE-002.png"
-          ]
-        }
-      ],
-      "raw": {
-        "scenario": "failing",
-        "note": "Local deterministic stand-in for UiPath Test Manager."
-      }
-    },
-    {
-      "execution_id": "tm-sim-0d319845",
-      "test_set_key": "ELIGIBILITY_TARGETED",
-      "test_set_name": "Eligibility and routing targeted checks",
-      "source": "simulated",
-      "status": "finished",
-      "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
-      "logs": [
-        {
-          "id": "log-3a75cf3b",
-          "test_case_key": "TC-ELIGIBILITY-101",
-          "test_case_name": "Injury claim requires adjuster review",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-ELIGIBILITY-101.png"
-          ]
-        },
-        {
-          "id": "log-5cf679e0",
-          "test_case_key": "TC-ELIGIBILITY-102",
-          "test_case_name": "High-value claim blocks straight-through settlement",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-ELIGIBILITY-102.png"
-          ]
-        },
-        {
-          "id": "log-2c6b2c21",
+          "id": "log-8fff2dd0",
           "test_case_key": "TC-HITL-201",
           "test_case_name": "Human review action is created for exception claim",
           "status": "finished",
@@ -278,27 +266,38 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "timeout",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     },
     {
-      "execution_id": "tm-sim-86dbdfab",
+      "execution_id": "tm-sim-a0109e64",
       "test_set_key": "CLAIMS_TARGETED_REGRESSION",
       "test_set_name": "ClaimsPilot targeted regression",
       "source": "simulated",
-      "status": "finished",
-      "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "status": "timed_out",
+      "result": "inconclusive",
+      "started_at": "2026-05-27T19:22:40.603734Z",
+      "finished_at": "2026-05-27T19:22:40.603734Z",
       "logs": [
         {
-          "id": "log-a3c2bb34",
+          "id": "log-f276c450",
           "test_case_key": "TC-REG-301",
           "test_case_name": "Inactive policy routes to manual exception",
+          "status": "timed_out",
+          "result": "inconclusive",
+          "duration_seconds": 900,
+          "message": "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "assertions": [],
+          "attachments": []
+        },
+        {
+          "id": "log-2cadd093",
+          "test_case_key": "TC-REG-302",
+          "test_case_name": "Fraud score routes to SIU review",
           "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -307,23 +306,7 @@
           "attachments": []
         },
         {
-          "id": "log-85cf564b",
-          "test_case_key": "TC-REG-302",
-          "test_case_name": "Fraud score routes to SIU review",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-REG-302.png"
-          ]
-        },
-        {
-          "id": "log-62bddc4e",
+          "id": "log-10630aca",
           "test_case_key": "TC-REG-303",
           "test_case_name": "Audit trail includes agent and human handoff",
           "status": "finished",
@@ -338,27 +321,38 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "timeout",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     },
     {
-      "execution_id": "tm-sim-1323110b",
+      "execution_id": "tm-sim-fa72c2b8",
       "test_set_key": "FULL_REGRESSION",
       "test_set_name": "Full ClaimsPilot regression",
       "source": "simulated",
-      "status": "finished",
-      "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "status": "timed_out",
+      "result": "inconclusive",
+      "started_at": "2026-05-27T19:22:40.604730Z",
+      "finished_at": "2026-05-27T19:22:40.604730Z",
       "logs": [
         {
-          "id": "log-34842a9a",
+          "id": "log-a49a334d",
           "test_case_key": "TC-FULL-901",
           "test_case_name": "End-to-end claim lifecycle",
+          "status": "timed_out",
+          "result": "inconclusive",
+          "duration_seconds": 900,
+          "message": "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "assertions": [],
+          "attachments": []
+        },
+        {
+          "id": "log-6d8bded1",
+          "test_case_key": "TC-FULL-902",
+          "test_case_name": "Document-missing exception recovery",
           "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -367,23 +361,7 @@
           "attachments": []
         },
         {
-          "id": "log-d057e87f",
-          "test_case_key": "TC-FULL-902",
-          "test_case_name": "Document-missing exception recovery",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-FULL-902.png"
-          ]
-        },
-        {
-          "id": "log-77a66560",
+          "id": "log-e43f2f23",
           "test_case_key": "TC-FULL-903",
           "test_case_name": "Cross-channel intake regression",
           "status": "finished",
@@ -398,7 +376,7 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "timeout",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     }
@@ -407,77 +385,65 @@
     "change_id": "chg-claimpilot-042",
     "failures": [
       {
-        "test_case_key": "TC-SMOKE-002",
-        "test_case_name": "Low-risk claim routes straight through",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-SMOKE-001",
+        "test_case_name": "Claim intake creates an audit event",
+        "category": "environment_issue",
+        "confidence": 0.86,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "Execution did not reach assertions."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Check robot capacity, Test Cloud execution folder, and retry once capacity is available.",
+        "requires_human_review": true
       },
       {
         "test_case_key": "TC-ELIGIBILITY-101",
         "test_case_name": "Injury claim requires adjuster review",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "category": "environment_issue",
+        "confidence": 0.86,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "Execution did not reach assertions."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Check robot capacity, Test Cloud execution folder, and retry once capacity is available.",
+        "requires_human_review": true
       },
       {
-        "test_case_key": "TC-ELIGIBILITY-102",
-        "test_case_name": "High-value claim blocks straight-through settlement",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-REG-301",
+        "test_case_name": "Inactive policy routes to manual exception",
+        "category": "environment_issue",
+        "confidence": 0.86,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "Execution did not reach assertions."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Check robot capacity, Test Cloud execution folder, and retry once capacity is available.",
+        "requires_human_review": true
       },
       {
-        "test_case_key": "TC-REG-302",
-        "test_case_name": "Fraud score routes to SIU review",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-FULL-901",
+        "test_case_name": "End-to-end claim lifecycle",
+        "category": "environment_issue",
+        "confidence": 0.86,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Execution timeout: robot unavailable in selected Test Cloud folder.",
+          "Execution did not reach assertions."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
-      },
-      {
-        "test_case_key": "TC-FULL-902",
-        "test_case_name": "Document-missing exception recovery",
-        "category": "product_bug",
-        "confidence": 0.9,
-        "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
-        ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Check robot capacity, Test Cloud execution folder, and retry once capacity is available.",
+        "requires_human_review": true
       }
     ],
-    "summary": "5 failing check(s) triaged; human review not required.",
-    "human_review_required": false
+    "summary": "4 failing check(s) triaged; human review required.",
+    "human_review_required": true
   },
   "release_notes": [
     "Change 'Tighten injury claim routing for ClaimsPilot' scored 100/100 (critical).",
     "Selected Test Cloud suites: SMOKE, ELIGIBILITY_TARGETED, CLAIMS_TARGETED_REGRESSION, FULL_REGRESSION.",
-    "Execution evidence: tm-sim-e5bbf25d, tm-sim-0d319845, tm-sim-86dbdfab, tm-sim-1323110b."
+    "Execution evidence: tm-sim-7fd25745, tm-sim-6036b974, tm-sim-a0109e64, tm-sim-fa72c2b8."
   ],
-  "human_review_status": "not_required",
+  "human_review_status": "pending",
   "action_center_task_id": null,
   "next_actions": [
-    "Block release and assign the product-bug triage item to the ClaimsPilot workflow owner."
+    "Create an Action Center task for QA Ops to inspect the timed-out Test Cloud execution."
   ]
 }
