@@ -68,6 +68,18 @@ open http://127.0.0.1:8000/dashboard
 
 The dashboard shows release verdict, risk drivers, selected tests, execution evidence, and one-click scenario controls.
 
+### Dashboard Preview
+
+![Release Sentinel Dashboard](artifacts/dashboard-smoke.png)
+
+The interactive dashboard provides:
+- **Release verdict** at a glance (Approve / Block / Review)
+- **Risk score & drivers** explaining why
+- **Test execution status** with IDs
+- **Failure triage** and recommendations
+- **Run history** for audit trail
+- **One-click scenario controls** to demo different outcomes
+
 ### Using Make Targets
 
 ```bash
@@ -306,6 +318,8 @@ curl -X POST "http://127.0.0.1:8000/api/analyze-change" \
     }
   }'
 ```
+
+For details on interpreting verdicts and understanding output files, see [ARTIFACTS.md](docs/ARTIFACTS.md).
 
 ---
 
