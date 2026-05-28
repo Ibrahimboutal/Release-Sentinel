@@ -1,41 +1,32 @@
 {
-  "change_id": "chg-claimpilot-042",
-  "generated_at": "2026-05-27T17:37:30.610651Z",
-  "decision": "block",
+  "change_id": "chg-api-088",
+  "generated_at": "2026-05-28T15:42:33.933376Z",
+  "decision": "needs_review",
   "risk": {
-    "change_id": "chg-claimpilot-042",
+    "change_id": "chg-api-088",
     "score": 100,
     "level": "critical",
     "impacted_capabilities": [
-      "claim_intake",
       "eligibility_routing",
-      "human_review",
       "audit_evidence"
     ],
     "drivers": [
       "base change risk: 15",
       "requirement mentions eligibility: +18",
       "requirement mentions routing: +16",
-      "requirement mentions settlement: +14",
-      "requirement mentions human review: +12",
-      "changed file matches eligibility: +18",
+      "changed file matches routing: +14",
+      "changed file matches api: +10",
       "changed file matches routing: +14",
       "changed file matches workflow: +12",
-      "changed file matches routing: +14",
-      "changed file matches docs: -10",
       "risk tag customer_impact: +18",
-      "risk tag regulated_decision: +18",
-      "risk tag human_in_loop: +10",
       "risk tag new_logic: +12",
-      "capability claim_intake: +8",
       "capability eligibility_routing: +16",
-      "capability human_review: +12",
       "capability audit_evidence: +10"
     ],
-    "confidence": 0.88
+    "confidence": 0.8
   },
   "plan": {
-    "change_id": "chg-claimpilot-042",
+    "change_id": "chg-api-088",
     "selected_test_sets": [
       {
         "key": "SMOKE",
@@ -167,30 +158,86 @@
     "escalation_policy": "Escalate to full regression when targeted tests fail, time out, or produce low-confidence triage.",
     "rationale": [
       "smoke coverage always runs as the release gate baseline",
-      "covers impacted capability: eligibility_routing, human_review",
-      "covers impacted capability: audit_evidence, claim_intake, eligibility_routing, human_review",
-      "covers impacted capability: audit_evidence, claim_intake, eligibility_routing, human_review"
+      "covers impacted capability: eligibility_routing",
+      "covers impacted capability: audit_evidence, eligibility_routing",
+      "covers impacted capability: audit_evidence, eligibility_routing"
     ],
     "expected_runtime_minutes": 40
   },
   "executions": [
     {
-      "execution_id": "tm-sim-e5bbf25d",
+      "execution_id": "tm-sim-54d17bf0",
       "test_set_key": "SMOKE",
       "test_set_name": "ClaimsPilot smoke release gate",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "started_at": "2026-05-28T15:42:33.933228Z",
+      "finished_at": "2026-05-28T15:42:33.933221Z",
       "logs": [
         {
-          "id": "log-4ff36c97",
+          "id": "log-d958bf40",
           "test_case_key": "TC-SMOKE-001",
           "test_case_name": "Claim intake creates an audit event",
           "status": "finished",
+          "result": "failed",
+          "duration_seconds": 55,
+          "message": "Unexpected API response with no structured assertion message.",
+          "assertions": [
+            "response payload should include routing decision"
+          ],
+          "attachments": []
+        },
+        {
+          "id": "log-554bd7bb",
+          "test_case_key": "TC-SMOKE-002",
+          "test_case_name": "Low-risk claim routes straight through",
+          "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
+          "message": "All assertions passed.",
+          "assertions": [
+            "claim persisted",
+            "audit event emitted"
+          ],
+          "attachments": []
+        }
+      ],
+      "raw": {
+        "scenario": "ambiguous",
+        "note": "Local deterministic stand-in for UiPath Test Manager."
+      }
+    },
+    {
+      "execution_id": "tm-sim-71767ae0",
+      "test_set_key": "ELIGIBILITY_TARGETED",
+      "test_set_name": "Eligibility and routing targeted checks",
+      "source": "simulated",
+      "status": "finished",
+      "result": "failed",
+      "started_at": "2026-05-28T15:42:33.933263Z",
+      "finished_at": "2026-05-28T15:42:33.933260Z",
+      "logs": [
+        {
+          "id": "log-0283358e",
+          "test_case_key": "TC-ELIGIBILITY-101",
+          "test_case_name": "Injury claim requires adjuster review",
+          "status": "finished",
+          "result": "failed",
+          "duration_seconds": 55,
+          "message": "Unexpected API response with no structured assertion message.",
+          "assertions": [
+            "response payload should include routing decision"
+          ],
+          "attachments": []
+        },
+        {
+          "id": "log-97780e2e",
+          "test_case_key": "TC-ELIGIBILITY-102",
+          "test_case_name": "High-value claim blocks straight-through settlement",
+          "status": "finished",
+          "result": "passed",
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -199,71 +246,7 @@
           "attachments": []
         },
         {
-          "id": "log-93c97d4f",
-          "test_case_key": "TC-SMOKE-002",
-          "test_case_name": "Low-risk claim routes straight through",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-SMOKE-002.png"
-          ]
-        }
-      ],
-      "raw": {
-        "scenario": "failing",
-        "note": "Local deterministic stand-in for UiPath Test Manager."
-      }
-    },
-    {
-      "execution_id": "tm-sim-0d319845",
-      "test_set_key": "ELIGIBILITY_TARGETED",
-      "test_set_name": "Eligibility and routing targeted checks",
-      "source": "simulated",
-      "status": "finished",
-      "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
-      "logs": [
-        {
-          "id": "log-3a75cf3b",
-          "test_case_key": "TC-ELIGIBILITY-101",
-          "test_case_name": "Injury claim requires adjuster review",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-ELIGIBILITY-101.png"
-          ]
-        },
-        {
-          "id": "log-5cf679e0",
-          "test_case_key": "TC-ELIGIBILITY-102",
-          "test_case_name": "High-value claim blocks straight-through settlement",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-ELIGIBILITY-102.png"
-          ]
-        },
-        {
-          "id": "log-2c6b2c21",
+          "id": "log-416f69b4",
           "test_case_key": "TC-HITL-201",
           "test_case_name": "Human review action is created for exception claim",
           "status": "finished",
@@ -278,27 +261,40 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "ambiguous",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     },
     {
-      "execution_id": "tm-sim-86dbdfab",
+      "execution_id": "tm-sim-50fc96f5",
       "test_set_key": "CLAIMS_TARGETED_REGRESSION",
       "test_set_name": "ClaimsPilot targeted regression",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "started_at": "2026-05-28T15:42:33.933295Z",
+      "finished_at": "2026-05-28T15:42:33.933292Z",
       "logs": [
         {
-          "id": "log-a3c2bb34",
+          "id": "log-c006f4a8",
           "test_case_key": "TC-REG-301",
           "test_case_name": "Inactive policy routes to manual exception",
           "status": "finished",
+          "result": "failed",
+          "duration_seconds": 55,
+          "message": "Unexpected API response with no structured assertion message.",
+          "assertions": [
+            "response payload should include routing decision"
+          ],
+          "attachments": []
+        },
+        {
+          "id": "log-97fdd1e6",
+          "test_case_key": "TC-REG-302",
+          "test_case_name": "Fraud score routes to SIU review",
+          "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -307,23 +303,7 @@
           "attachments": []
         },
         {
-          "id": "log-85cf564b",
-          "test_case_key": "TC-REG-302",
-          "test_case_name": "Fraud score routes to SIU review",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-REG-302.png"
-          ]
-        },
-        {
-          "id": "log-62bddc4e",
+          "id": "log-c9f2cf6d",
           "test_case_key": "TC-REG-303",
           "test_case_name": "Audit trail includes agent and human handoff",
           "status": "finished",
@@ -338,27 +318,40 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "ambiguous",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     },
     {
-      "execution_id": "tm-sim-1323110b",
+      "execution_id": "tm-sim-1f733cee",
       "test_set_key": "FULL_REGRESSION",
       "test_set_name": "Full ClaimsPilot regression",
       "source": "simulated",
       "status": "finished",
       "result": "failed",
-      "started_at": "2026-05-27T17:37:30.609287Z",
-      "finished_at": "2026-05-27T17:37:30.609287Z",
+      "started_at": "2026-05-28T15:42:33.933322Z",
+      "finished_at": "2026-05-28T15:42:33.933319Z",
       "logs": [
         {
-          "id": "log-34842a9a",
+          "id": "log-9783164a",
           "test_case_key": "TC-FULL-901",
           "test_case_name": "End-to-end claim lifecycle",
           "status": "finished",
+          "result": "failed",
+          "duration_seconds": 55,
+          "message": "Unexpected API response with no structured assertion message.",
+          "assertions": [
+            "response payload should include routing decision"
+          ],
+          "attachments": []
+        },
+        {
+          "id": "log-dd83808f",
+          "test_case_key": "TC-FULL-902",
+          "test_case_name": "Document-missing exception recovery",
+          "status": "finished",
           "result": "passed",
-          "duration_seconds": 26,
+          "duration_seconds": 30,
           "message": "All assertions passed.",
           "assertions": [
             "claim persisted",
@@ -367,23 +360,7 @@
           "attachments": []
         },
         {
-          "id": "log-d057e87f",
-          "test_case_key": "TC-FULL-902",
-          "test_case_name": "Document-missing exception recovery",
-          "status": "finished",
-          "result": "failed",
-          "duration_seconds": 49,
-          "message": "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "assertions": [
-            "expected route adjuster_review",
-            "human review required for injury claim"
-          ],
-          "attachments": [
-            "artifacts/screenshots/TC-FULL-902.png"
-          ]
-        },
-        {
-          "id": "log-77a66560",
+          "id": "log-3d03f8bb",
           "test_case_key": "TC-FULL-903",
           "test_case_name": "Cross-channel intake regression",
           "status": "finished",
@@ -398,86 +375,70 @@
         }
       ],
       "raw": {
-        "scenario": "failing",
+        "scenario": "ambiguous",
         "note": "Local deterministic stand-in for UiPath Test Manager."
       }
     }
   ],
   "triage": {
-    "change_id": "chg-claimpilot-042",
+    "change_id": "chg-api-088",
     "failures": [
       {
-        "test_case_key": "TC-SMOKE-002",
-        "test_case_name": "Low-risk claim routes straight through",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-SMOKE-001",
+        "test_case_name": "Claim intake creates an audit event",
+        "category": "needs_human_review",
+        "confidence": 0.52,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Unexpected API response with no structured assertion message."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Route to QA lead in Action Center for classification before release.",
+        "requires_human_review": true
       },
       {
         "test_case_key": "TC-ELIGIBILITY-101",
         "test_case_name": "Injury claim requires adjuster review",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "category": "needs_human_review",
+        "confidence": 0.52,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Unexpected API response with no structured assertion message."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Route to QA lead in Action Center for classification before release.",
+        "requires_human_review": true
       },
       {
-        "test_case_key": "TC-ELIGIBILITY-102",
-        "test_case_name": "High-value claim blocks straight-through settlement",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-REG-301",
+        "test_case_name": "Inactive policy routes to manual exception",
+        "category": "needs_human_review",
+        "confidence": 0.52,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Unexpected API response with no structured assertion message."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Route to QA lead in Action Center for classification before release.",
+        "requires_human_review": true
       },
       {
-        "test_case_key": "TC-REG-302",
-        "test_case_name": "Fraud score routes to SIU review",
-        "category": "product_bug",
-        "confidence": 0.9,
+        "test_case_key": "TC-FULL-901",
+        "test_case_name": "End-to-end claim lifecycle",
+        "category": "needs_human_review",
+        "confidence": 0.52,
         "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
+          "Unexpected API response with no structured assertion message."
         ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
-      },
-      {
-        "test_case_key": "TC-FULL-902",
-        "test_case_name": "Document-missing exception recovery",
-        "category": "product_bug",
-        "confidence": 0.9,
-        "evidence": [
-          "Eligibility assertion failed: expected route adjuster_review but received straight_through.",
-          "Change chg-claimpilot-042 modifies decisioning/routing behavior."
-        ],
-        "recommended_fix": "Review the eligibility/routing rule change and add an explicit approval for affected claim classes.",
-        "requires_human_review": false
+        "recommended_fix": "Route to QA lead in Action Center for classification before release.",
+        "requires_human_review": true
       }
     ],
-    "summary": "5 failing check(s) triaged; human review not required.",
-    "human_review_required": false
+    "summary": "4 failing check(s) triaged; human review required.",
+    "human_review_required": true
   },
   "release_notes": [
-    "Change 'Tighten injury claim routing for ClaimsPilot' scored 100/100 (critical).",
+    "Change 'Refactor routing API response envelope' scored 100/100 (critical).",
     "Selected Test Cloud suites: SMOKE, ELIGIBILITY_TARGETED, CLAIMS_TARGETED_REGRESSION, FULL_REGRESSION.",
-    "Execution evidence: tm-sim-e5bbf25d, tm-sim-0d319845, tm-sim-86dbdfab, tm-sim-1323110b."
+    "Execution evidence: tm-sim-54d17bf0, tm-sim-71767ae0, tm-sim-50fc96f5, tm-sim-1f733cee."
   ],
-  "human_review_status": "not_required",
+  "human_review_status": "pending",
   "action_center_task_id": null,
   "next_actions": [
-    "Block release and assign the product-bug triage item to the ClaimsPilot workflow owner."
+    "Route the verdict to Action Center for QA lead review before release approval."
   ]
 }
